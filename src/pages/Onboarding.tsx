@@ -9,7 +9,7 @@ export default function Onboarding() {
     <main className="page onboarding">
       <Logo size={96} />
       <h1>Tarot Twin</h1>
-      <p className="muted">One card a day. A shared reading for two.</p>
+      <p className="muted">One card a day. A twin reading for two.</p>
       <form
         onSubmit={(e) => {
           e.preventDefault()

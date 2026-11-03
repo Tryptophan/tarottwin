@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { TarotCard } from '../components/TarotCard'
 import { CardInspect } from '../components/CardInspect'
 import Countdown from '../components/Countdown'
+import TwinReadings from '../components/TwinReadings'
 import { update, useAppState, withUnlocked } from '../lib/storage'
 import { dailyCard } from '../lib/reading'
 import { utcDate } from '../lib/dates'
@@ -41,6 +42,7 @@ export default function Home() {
       </div>
       {!isRevealed && <p className="muted" style={{ textAlign: 'center' }}>Tap the card to reveal</p>}
       <Countdown onZero={onZero} hidden={!isRevealed} />
+      <TwinReadings />
       <CardInspect card={sheet} onClose={() => setSheet(null)} />
     </main>
   )

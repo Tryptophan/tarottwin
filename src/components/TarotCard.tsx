@@ -67,7 +67,8 @@ function TarotCardSmall({ card, onInspect, label }: Props) {
   useEffect(() => {
     if (!seen) return
     let dead = false
-    if (peekTextures(card.id)) return
+    // no early exit for a card whose full-size textures are cached (e.g. today's card, opened on Home):
+    // the thumbnail is a separate canvas and still has to be drawn, or it would spin forever
     loadManifest()
       .then((m) => (m ? loadSmallFace(m, card) : Promise.reject(new Error('no manifest'))))
       .then((src) => {

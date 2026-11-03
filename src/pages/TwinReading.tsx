@@ -1,10 +1,10 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
-import { Link, useParams, useSearchParams } from 'react-router-dom'
+import { Link, useParams } from 'react-router-dom'
 import { TarotCard } from '../components/TarotCard'
 import { CardInspect } from '../components/CardInspect'
 import Countdown from '../components/Countdown'
 import DignityChips from '../components/DignityChips'
-import { update, useAppState, withFriend, withReading, withUnlocked } from '../lib/storage'
+import { update, useAppState, withReading, withUnlocked } from '../lib/storage'
 import { pairReading } from '../lib/reading'
 import { utcDate } from '../lib/dates'
 import { isValidId } from '../lib/twinLink'
@@ -12,19 +12,14 @@ import type { Card } from '../data/cards'
 
 export default function TwinReading() {
   const { id = '' } = useParams()
-  const [params] = useSearchParams()
-  const nameParam = params.get('n') ?? ''
   const { userId, name, friends } = useAppState()
   const valid = isValidId(id)
   const own = id === userId
 
-  useEffect(() => {
-    if (valid && !own) update((s) => withFriend(s, id, nameParam))
-  }, [valid, own, id, nameParam])
-
   if (!valid) return <main className="page"><h1>Invalid link</h1><p className="muted">This Twin link is not valid.</p><Link className="btn btn-ghost" to="/twin">Back</Link></main>
-  if (own) return <main className="page"><h1>That's you</h1><p className="muted">This is your own code. Scan a friend's instead.</p><Link className="btn btn-ghost" to="/twin">Back</Link></main>
-  const friendName = friends[id]?.name ?? (nameParam.trim() || 'Friend')
+  if (own) return <main className="page"><h1>That's you</h1><p className="muted">This is your own code. Open a friend's invite instead.</p><Link className="btn btn-ghost" to="/twin">Back</Link></main>
+  if (!friends[id]) return <main className="page"><h1>Not a bond yet</h1><p className="muted">Share your invite from the Twin tab, or open a friend's invite link.</p><Link className="btn btn-ghost" to="/twin">Back</Link></main>
+  const friendName = friends[id].name
   return <Reading key={id} friendId={id} friendName={friendName} myId={userId} myName={name} />
 }
 
@@ -69,7 +64,6 @@ function Reading({ friendId, friendName, myId, myName }: { friendId: string; fri
           youBridge={r.youBridge} friendBridge={r.friendBridge} tone={r.tone}
           myName={myName || 'You'} friendName={friendName} />
       )}
-      <p className="muted note">{friendName} should scan your QR too to see the same reading.</p>
       <Countdown label="Next reading in" onZero={onZero} hidden={step < 3} />
       <CardInspect card={sheet} onClose={() => setSheet(null)} />
     </main>

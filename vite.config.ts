@@ -32,7 +32,7 @@ export default defineConfig({
       manifest: {
         name: 'Tarot Twin',
         short_name: 'Tarot Twin',
-        description: 'A daily card, and a shared reading for two.',
+        description: 'A daily card, and a twin reading for two.',
         theme_color: '#170a24',
         background_color: '#170a24',
         display: 'standalone',
@@ -46,5 +46,5 @@ export default defineConfig({
       },
     }),
   ],
-  test: { environment: 'jsdom', include: ['src/**/*.test.ts'] },
+  test: { environment: 'jsdom', include: ['src/**/*.test.{ts,tsx}'] },
 })

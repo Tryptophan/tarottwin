@@ -40,7 +40,7 @@ export default function BondDetail() {
         )
       })}
       <button className="btn btn-ghost" onClick={() => {
-        if (confirm(`Delete ${friend.name} and all shared readings?`)) {
+        if (confirm(`Delete ${friend.name} and all twin readings?`)) {
           update((s) => withoutFriend(s, id))
           nav('/bonds')
         }
