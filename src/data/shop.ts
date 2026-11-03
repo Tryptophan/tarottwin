@@ -13,8 +13,8 @@ export const FEATURED: Product = {
 
 /** Items without a `url` show as coming soon. */
 export const ATMOSPHERE: readonly Product[] = [
-  { title: 'Crystals', blurb: 'A small set to rest beside your cards.', url: 'https://link.amazon/B0gELhSdO' },
-  { title: 'Candles', blurb: 'A soft light for a reading.', url: 'https://link.amazon/B0gXQZQUy' },
+  { title: 'Crystals', blurb: 'A small set to rest beside your cards.', url: 'https://link.amazon/B0gXQZQUy' },
+  { title: 'Candles', blurb: 'A soft light for a reading.', url: 'https://link.amazon/B0gELhSdO' },
   { title: 'Incense', blurb: 'Clear the air before you ask.', url: 'https://link.amazon/B04RGbdHm' },
   { title: 'Altar tray', blurb: 'A place for your deck and your tools.', url: 'https://link.amazon/B01LK6q2x' },
 ]
