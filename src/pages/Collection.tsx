@@ -17,7 +17,7 @@ type Filter = (typeof FILTERS)[number]['key']
 
 /** Every card in the deck. A card is lit once you have unlocked it; the rest are shadowed (but can still be inspected). */
 export default function Collection() {
-  const { unlocked } = useAppState()
+  const { unlocked, prints } = useAppState()
   const debug = unlockAll()
   const [filter, setFilter] = useState<Filter>('all')
   const [onlyUnlocked, setOnlyUnlocked] = useState(true)
@@ -56,12 +56,13 @@ export default function Collection() {
       )}
       <div className="collection-grid">
         {cards.map((c) => (
-          <span key={c.id} className={isLocked(c) ? 'tcard-locked' : undefined}>
+          <span key={c.id} className={`collection-tile${isLocked(c) ? ' tcard-locked' : ''}`}>
             <TarotCard card={c} revealed size="sm" onInspect={() => setSheet(c)} />
+            {(prints[c.id]?.length ?? 0) > 0 && <span className="collection-count" aria-label={`${prints[c.id].length} owned`}>×{prints[c.id].length}</span>}
           </span>
         ))}
       </div>
-      <CardInspect card={sheet} onClose={() => setSheet(null)} locked={sheet ? isLocked(sheet) : false} />
+      <CardInspect card={sheet} owned={sheet ? prints[sheet.id] ?? [] : undefined} onClose={() => setSheet(null)} locked={sheet ? isLocked(sheet) : false} />
     </main>
   )
 }

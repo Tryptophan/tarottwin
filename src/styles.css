@@ -309,6 +309,13 @@ label, .label { display: block; font-family: var(--font-head); font-size: 0.8rem
 }
 .inspect-stage { position: relative; z-index: 1; width: var(--cw); display: flex; justify-content: center; }
 .inspect-stage .tcard-wrap { --cw: inherit; }
+.inspect-finishes { position: relative; z-index: 2; display: flex; flex-wrap: wrap; justify-content: center; gap: 6px; max-width: 420px; }
+.inspect-finishes button {
+  padding: 6px 10px; border-radius: 999px; cursor: pointer; font-size: 0.8rem; color: var(--text);
+  background: rgba(61, 28, 89, 0.7); border: 1px solid var(--border);
+}
+.inspect-finishes button:disabled { opacity: 0.35; cursor: default; }
+.inspect-finishes button.on { background: var(--border); font-weight: 600; }
 /* spinner over a WebGL card until its first frame (taps still reach the canvas) */
 .tcard-gl-loading { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; border-radius: 6% / 3.5%; background: rgba(23, 10, 36, 0.85); border: 1px solid var(--border); }
 /* face-up: the flat card is already showing, so only a small spinner chip marks the foil still loading */

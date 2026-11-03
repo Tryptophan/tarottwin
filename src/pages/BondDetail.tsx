@@ -7,12 +7,13 @@ import { update, useAppState, withoutFriend } from '../lib/storage'
 import { streakBefore, twinProse } from '../lib/prose'
 import { CARD_BY_ID, type Card } from '../data/cards'
 import { overallTone, relation } from '../lib/dignity'
+import { bridgeSeed, dailySeed, printFor, type Print } from '../lib/print'
 
 export default function BondDetail() {
   const { id = '' } = useParams()
-  const { friends, history, name } = useAppState()
+  const { userId, friends, history, name } = useAppState()
   const nav = useNavigate()
-  const [sheet, setSheet] = useState<Card | null>(null)
+  const [sheet, setSheet] = useState<{ card: Card; print: Print } | null>(null)
   const friend = friends[id]
   if (!friend) return <main className="page"><h1>Not found</h1><Link className="btn btn-ghost" to="/bonds">Back</Link></main>
   const entries = history[id] ?? []
@@ -27,12 +28,17 @@ export default function BondDetail() {
         const yf = relation(mine.element, theirs.element)
         const yb = relation(mine.element, bridge.element)
         const fb = relation(theirs.element, bridge.element)
+        const prints = [
+          printFor(dailySeed(userId, e.date), mine),
+          printFor(dailySeed(id, e.date), theirs),
+          printFor(bridgeSeed(userId, id, e.date), bridge),
+        ]
         return (
           <section key={e.date} className="bond-day">
             <h2>{e.date}</h2>
             <div className="bond-cards">
               {[mine, theirs, bridge].map((c, i) => (
-                <TarotCard key={i} card={c} revealed size="sm" onInspect={() => setSheet(c)} />
+                <TarotCard key={i} card={c} print={prints[i]} revealed size="sm" onInspect={() => setSheet({ card: c, print: prints[i] })} />
               ))}
             </div>
             <p className="prose">{twinProse(
@@ -51,7 +57,7 @@ export default function BondDetail() {
           nav('/bonds')
         }
       }}>Delete friend</button>
-      <CardInspect card={sheet} onClose={() => setSheet(null)} />
+      <CardInspect card={sheet?.card ?? null} print={sheet?.print} onClose={() => setSheet(null)} />
     </main>
   )
 }

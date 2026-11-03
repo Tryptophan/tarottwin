@@ -4,10 +4,11 @@ import { TarotCard } from '../components/TarotCard'
 import { CardInspect } from '../components/CardInspect'
 import Countdown from '../components/Countdown'
 import DignityChips from '../components/DignityChips'
-import { update, useAppState, withReading, withUnlocked } from '../lib/storage'
+import { update, useAppState, withPrints, withReading, withUnlocked } from '../lib/storage'
 import { streakBefore, twinProse } from '../lib/prose'
 import { pairReading } from '../lib/reading'
 import { utcDate } from '../lib/dates'
+import { bridgeSeed, dailySeed, printFor, type Print } from '../lib/print'
 import { isValidId } from '../lib/twinLink'
 import type { Card } from '../data/cards'
 
@@ -19,7 +20,7 @@ export default function TwinReading() {
 
   if (!valid) return <main className="page"><h1>Invalid link</h1><p className="muted">This Twin link is not valid.</p><Link className="btn btn-ghost" to="/twin">Back</Link></main>
   if (own) return <main className="page"><h1>That's you</h1><p className="muted">This is your own code. Open a friend's invite instead.</p><Link className="btn btn-ghost" to="/twin">Back</Link></main>
-  if (!friends[id]) return <main className="page"><h1>Not a bond yet</h1><p className="muted">Share your invite from the Twin tab, or open a friend's invite link.</p><Link className="btn btn-ghost" to="/twin">Back</Link></main>
+  if (!friends[id]) return <main className="page"><h1>Not a bond yet</h1><p className="muted">Share your invite from Bonds, or open a friend's invite link.</p><Link className="btn btn-ghost" to="/twin">Back</Link></main>
   const friendName = friends[id].name
   return <Reading key={id} friendId={id} friendName={friendName} myId={userId} myName={name} />
 }
@@ -43,6 +44,11 @@ function Reading({ friendId, friendName, myId, myName }: { friendId: string; fri
   })
   const [sheet, setSheet] = useState<Card | null>(null)
   const r = useMemo(() => pairReading(myId, friendId, date), [myId, friendId, date])
+  const prints = useMemo<Print[]>(() => [
+    printFor(dailySeed(myId, date), r.mine),
+    printFor(dailySeed(friendId, date), r.theirs),
+    printFor(bridgeSeed(myId, friendId, date), r.bridge),
+  ], [myId, friendId, date, r])
 
   useEffect(() => {
     if (step === 3) {
@@ -53,8 +59,8 @@ function Reading({ friendId, friendName, myId, myName }: { friendId: string; fri
   // each card revealed is unlocked in the Collection
   useEffect(() => {
     const ids = [r.mine.id, r.theirs.id, r.bridge.id].slice(0, step)
-    if (ids.length) update((s) => withUnlocked(s, ...ids))
-  }, [step, r])
+    if (ids.length) update((s) => withPrints(withUnlocked(s, ...ids), ...ids.map((id, i): [string, Print] => [id, prints[i]])))
+  }, [step, r, prints])
 
   useEffect(() => {
     try { localStorage.setItem(STEPS_KEY, `${stepsId(myId, friendId, date)}=${step}`) } catch { /* ignore */ }
@@ -74,7 +80,7 @@ function Reading({ friendId, friendName, myId, myName }: { friendId: string; fri
       <div className="reading-cards">
         {cards.map(([card, label], i) => (
           <div key={i} className={`reading-slot${i > step ? ' reading-locked' : ''}`}>
-            <TarotCard card={card} revealed={step > i} size="md" label={label}
+            <TarotCard card={card} print={prints[i]} revealed={step > i} size="md" label={label}
               onReveal={i === step ? reveal(i) : undefined}
               onInspect={() => setSheet(card)} />
           </div>
@@ -88,7 +94,7 @@ function Reading({ friendId, friendName, myId, myName }: { friendId: string; fri
           myName={myName || 'You'} friendName={friendName} />
       )}
       <Countdown label="Next reading in" onZero={onZero} hidden={step < 3} />
-      <CardInspect card={sheet} onClose={() => setSheet(null)} />
+      <CardInspect card={sheet} print={sheet ? prints[[r.mine, r.theirs, r.bridge].indexOf(sheet)] : undefined} onClose={() => setSheet(null)} />
     </main>
   )
 }

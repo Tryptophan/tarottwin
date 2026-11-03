@@ -18,14 +18,6 @@ const ITEMS = [
     </>),
   },
   {
-    to: '/twin', label: 'Twin', end: false,
-    // two overlapping circles (vesica piscis)
-    icon: svg(<>
-      <circle cx="9" cy="12" r="6" />
-      <circle cx="15" cy="12" r="6" />
-    </>),
-  },
-  {
     to: '/bonds', label: 'Bonds', end: false,
     // infinity knot
     icon: svg(<path d="M12 12c-2-3-3.5-4.5-5.5-4.5a4.5 4.5 0 0 0 0 9c2 0 3.5-1.500 5.500-4.500zm0 0c2 3 3.500 4.500 5.500 4.500a4.500 4.500 0 0 0 0-9c-2 0-3.500 1.500-5.500 4.500z" />),

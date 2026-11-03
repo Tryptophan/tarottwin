@@ -27,7 +27,7 @@ describe('stubbed profile', () => {
     for (const e of Object.values(s.history).flat()) [e.mine, e.theirs, e.bridge].forEach((c) => expect(ids.has(c)).toBe(true))
     s.unlocked.forEach((c) => expect(ids.has(c)).toBe(true))
     expect(s.unlocked.length).toBeGreaterThan(10)
-    expect(s.unlocked.length).toBeLessThan(DECK.length)
+    expect(s.unlocked.length).toBe(DECK.length) // every card has prints, so every card is unlocked
   })
 
   it('is stable for a given day and moves with the date', () => {

@@ -425,7 +425,7 @@ vec3 apply_finish(inout vec3 col, vec2 uv, float foil_m, float art_win, float po
 			float s = 90.0 + fl * 70.0;
 			vec2 sp = vec2((uv.x + tl.x * (0.03 + fl * 0.03)) * s, (uv.y + tl.y * (0.03 + fl * 0.03)) * s);
 			float h = hash(vec2(floor(sp.x) + fl * 7.0, floor(sp.y) + fl * 7.0));
-			float tw = 0.5 + 0.5 * sin(c.t * rate(2.0 + h * 5.0) + h * 30.0);
+			float tw = 0.75 + 0.25 * sin(c.t * rate(0.8 + h * 1.6) + h * 30.0); // gentle shimmer: a full on/off blink reads as flicker
 			vec2 f = fract(sp) - 0.5;
 			float dd = sqrt(f.x * f.x + f.y * f.y);
 			stars += (h >= 0.988 ? 1.0 : 0.0) * tw * smoothstep_down(0.5, 0.0, dd);

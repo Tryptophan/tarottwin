@@ -3,12 +3,19 @@ import { createPortal } from 'react-dom'
 import type { Card } from '../data/cards'
 import { TarotCard } from './TarotCard'
 import { holdOverlay } from '../gl/renderer'
+import { RARITIES, type Print, type Rarity } from '../lib/print'
 
 /**
  * Full-screen view of a revealed card (its details are printed on the card). It owns a history entry,
  * so the phone's back gesture closes it instead of leaving the page.
  */
-export function CardInspect({ card, onClose, locked = false }: { card: Card | null; onClose: () => void; locked?: boolean }) {
+const label = (r: Rarity) => r[0] + r.slice(1).toLowerCase()
+
+/**
+ * `print` is the copy drawn in a reading. In the Collection, pass `owned` instead (every print pulled of this card):
+ * a button per rarity switches between them, and the rarities not owned are disabled.
+ */
+export function CardInspect({ card, print, owned, onClose, locked = false }: { card: Card | null; print?: Print; owned?: Print[]; onClose: () => void; locked?: boolean }) {
   const backRef = useRef<HTMLButtonElement>(null)
   const pushed = useRef(false)
   const pending = useRef<number | undefined>(undefined)
@@ -16,7 +23,12 @@ export function CardInspect({ card, onClose, locked = false }: { card: Card | nu
   onCloseRef.current = onClose
   const open = card !== null
   const [faceUp, setFaceUp] = useState(true)
-  useEffect(() => setFaceUp(true), [card?.id])
+  const [pick, setPick] = useState<Rarity | null>(null)
+  // the latest pull of each rarity; the rarest one owned is shown first
+  const byRarity = (r: Rarity) => owned?.filter((p) => p.rarity === r).at(-1)
+  const rarest = [...RARITIES].reverse().find((r) => byRarity(r))
+  const shown = owned ? byRarity(pick ?? rarest ?? 'COMMON') : print
+  useEffect(() => { setFaceUp(true); setPick(null) }, [card?.id])
 
   useEffect(() => {
     if (!open) return
@@ -70,8 +82,21 @@ export function CardInspect({ card, onClose, locked = false }: { card: Card | nu
           strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
       </button>
       <div className={`inspect-stage tcard-xl${locked ? ' tcard-locked' : ''}`} onClick={(e) => e.target === e.currentTarget && close()}>
-        <TarotCard card={card} revealed={faceUp} size="xl" onReveal={() => setFaceUp(true)} onInspect={() => setFaceUp(false)} />
+        <TarotCard card={card} print={shown} revealed={faceUp} size="xl" onReveal={() => setFaceUp(true)} onInspect={() => setFaceUp(false)} />
       </div>
+      {owned && (
+        <div className="inspect-finishes" role="radiogroup" aria-label="Rarity">
+          {RARITIES.map((r) => {
+            const n = owned.filter((p) => p.rarity === r).length
+            return (
+              <button key={r} type="button" role="radio" aria-checked={shown?.rarity === r} disabled={n === 0}
+                className={shown?.rarity === r ? 'on' : ''} onClick={() => setPick(r)}>
+                {label(r)}{n > 0 && ` ×${n}`}
+              </button>
+            )
+          })}
+        </div>
+      )}
     </div>,
     document.body,
   )

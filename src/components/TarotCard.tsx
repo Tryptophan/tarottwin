@@ -4,6 +4,7 @@ import { isWarm, overlayOpen, releaseRenderer, retainRenderer, sharedRenderer } 
 import type { CardTextures } from '../gl/types'
 import { loadCardTextures, loadSmallFace, peekTextures } from '../gl/cardFace'
 import { finishFor, loadManifest, lowPower } from '../lib/foil'
+import { faceKey, type Print } from '../lib/print'
 import { Sparkles } from './Sparkles'
 import { TarotCardFallback } from './TarotCardFallback'
 
@@ -11,6 +12,8 @@ type Size = 'sm' | 'md' | 'lg' | 'xl'
 
 interface Props {
   card: Card
+  /** serial and rarity of this copy: printed on the face, and picks the finish */
+  print?: Print
   revealed: boolean
   onReveal?: () => void
   onInspect?: () => void
@@ -30,7 +33,8 @@ export function TarotCard(props: Props) {
   const reduced = typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches
   if (props.size === 'sm') return props.revealed ? <TarotCardSmall {...props} /> : <TarotCardFallback {...props} />
   if (reduced) return <TarotCardFallback {...props} />
-  return <TarotCardGL {...props} />
+  // a different print is a different face: remount, so no texture of the old one is cached under the new key
+  return <TarotCardGL key={faceKey(props.card, props.print)} {...props} />
 }
 
 /** Loading placeholder in the card's shape: a small spinner (a static ring under reduced motion). */
@@ -50,7 +54,8 @@ const DEFAULT_ASPECT = 0.5795
 const GL_TIMEOUT_MS = 10_000
 
 /** Thumbnail: the composed 2D face, loaded lazily when scrolled into view. No WebGL context. */
-function TarotCardSmall({ card, onInspect, label }: Props) {
+function TarotCardSmall({ card, print, onInspect, label }: Props) {
+  const key = faceKey(card, print)
   const hostRef = useRef<HTMLSpanElement>(null)
   const holder = useRef<HTMLSpanElement>(null)
   const [seen, setSeen] = useState(false)
@@ -70,7 +75,7 @@ function TarotCardSmall({ card, onInspect, label }: Props) {
     // no early exit for a card whose full-size textures are cached (e.g. today's card, opened on Home):
     // the thumbnail is a separate canvas and still has to be drawn, or it would spin forever
     loadManifest()
-      .then((m) => (m ? loadSmallFace(m, card) : Promise.reject(new Error('no manifest'))))
+      .then((m) => (m ? loadSmallFace(m, card, print) : Promise.reject(new Error('no manifest'))))
       .then((src) => {
         if (dead || !holder.current) return
         const c = document.createElement('canvas')
@@ -83,9 +88,9 @@ function TarotCardSmall({ card, onInspect, label }: Props) {
       })
       .catch(() => !dead && setState('failed'))
     return () => { dead = true }
-  }, [seen, card])
+  }, [seen, key])
 
-  if (state === 'failed') return <TarotCardFallback card={card} revealed onInspect={onInspect} label={label} size="sm" />
+  if (state === 'failed') return <TarotCardFallback card={card} print={print} revealed onInspect={onInspect} label={label} size="sm" />
   return (
     <span className="tcard-host" ref={hostRef}>
       <div className="tcard-wrap tcard-sm">
@@ -101,13 +106,14 @@ function TarotCardSmall({ card, onInspect, label }: Props) {
 }
 
 function TarotCardGL(props: Props) {
-  const { card, revealed, onReveal, onInspect, label, size = 'md' } = props
+  const { card, print, revealed, onReveal, onInspect, label, size = 'md' } = props
+  const key = faceKey(card, print)
   const hostRef = useRef<HTMLSpanElement>(null)
   const canvasRef = useRef<HTMLCanvasElement>(null)
-  const [textures, setTextures] = useState<CardTextures | null>(() => peekTextures(card.id))
+  const [textures, setTextures] = useState<CardTextures | null>(() => peekTextures(key))
   const [failed, setFailed] = useState(false)
   const [visible, setVisible] = useState(true)
-  const [active, setActive] = useState(() => peekTextures(card.id) !== null) // WebGL canvas mounted
+  const [active, setActive] = useState(() => peekTextures(key) !== null) // WebGL canvas mounted
   const [burst, setBurst] = useState(0)
   const [drawn, setDrawn] = useState(false)
   const flatRef = useRef<HTMLCanvasElement>(null)
@@ -125,15 +131,16 @@ function TarotCardGL(props: Props) {
   // lazy texture load
   useEffect(() => {
     let dead = false
-    if (peekTextures(card.id)) return
+    const hit = peekTextures(key)
+    if (hit) return setTextures(hit)
     loadManifest()
-      .then((m) => (m ? loadCardTextures(m, card) : Promise.reject(new Error('no manifest'))))
+      .then((m) => (m ? loadCardTextures(m, card, print) : Promise.reject(new Error('no manifest'))))
       .then((t) => !dead && setTextures(t))
       .catch(() => !dead && setFailed(true))
     return () => {
       dead = true
     }
-  }, [card.id])
+  }, [key])
 
   // WebGL gets 10 s from when the card is on screen to draw its first frame, else the flat card takes over
   useEffect(() => {
@@ -220,7 +227,6 @@ function TarotCardGL(props: Props) {
     }
     // 4x supersampling only pays off on low-DPR screens; at 2x the extra taps just cost ~2x frame time
     const supersample = !lowPower() && (window.devicePixelRatio || 1) < 2
-    const finish = finishFor(card)
     const seed = [...card.id].reduce((a, c) => (a * 31 + c.charCodeAt(0)) % 997, 7)
     const start = performance.now()
     const cur = { x: 0, y: 0 }
@@ -293,7 +299,7 @@ function TarotCardGL(props: Props) {
       }
       if (first) { first = false; setDrawn(true) }
       try {
-        sharedRenderer().draw(canvas, card.id, textures, { yaw: base + cur.x, pitch: cur.y * Math.cos(base), time, cardScale: CARD_SCALE + lift, finish, supersample, seed })
+        sharedRenderer().draw(canvas, key, textures, { yaw: base + cur.x, pitch: cur.y * Math.cos(base), time, cardScale: CARD_SCALE + lift, finish: finishFor(card, print), supersample, seed })
       } catch {
         cancelAnimationFrame(raf)
         setFailed(true)
@@ -317,7 +323,7 @@ function TarotCardGL(props: Props) {
       releaseRenderer()
     }
     }
-    if (revealedRef.current && flipStart.current === null && !pendingFlip.current && !isWarm(card.id)) {
+    if (revealedRef.current && flipStart.current === null && !pendingFlip.current && !isWarm(key)) {
       // the flat face is already on screen and the GPU has nothing cached: set WebGL up after the first paint
       raf1 = requestAnimationFrame(() => { t1 = window.setTimeout(() => { stop = boot() }, 0) })
     } else stop = boot()
@@ -326,7 +332,7 @@ function TarotCardGL(props: Props) {
       window.clearTimeout(t1)
       stop?.()
     }
-  }, [active, textures, card])
+  }, [active, textures, card, key])
 
   const onKey = useCallback((e: React.KeyboardEvent) => {
     if (e.key !== 'Enter' && e.key !== ' ') return

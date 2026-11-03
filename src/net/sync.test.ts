@@ -13,7 +13,7 @@ const BOB = 'bbbbbbbbbbbbbbbbbbbb'
 const CARA = 'cccccccccccccccccccc'
 
 const person = (userId: string, name: string): AppState => ({
-  userId, userSecret: randomHex(32), inviteSecret: randomHex(16), revoked: [], name, onboarded: true, friends: {}, history: {}, unlocked: [],
+  userId, userSecret: randomHex(32), inviteSecret: randomHex(16), revoked: [], name, onboarded: true, friends: {}, history: {}, unlocked: [], prints: {},
 })
 
 /** `joiner` opens `inviter`'s permanent link: a bond with a fresh secret, waiting for the inviter to answer. */

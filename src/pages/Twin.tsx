@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import QrCode from '../components/QrCode'
 import Scanner from '../components/Scanner'
 import { useAppState } from '../lib/storage'
@@ -45,8 +45,9 @@ export default function Twin() {
 
   return (
     <main className="page twin">
+      <p><Link to="/bonds">&larr; Bonds</Link></p>
       <h1>Twin</h1>
-      <p className="muted">A twin reading pairs your daily card with a friend's and adds a bridge card. New every day.</p>
+      <p className="muted">A twin reading pairs your daily card with a friend's and adds a bridge card.</p>
       <div className="tabs" role="tablist">
         <button role="tab" aria-selected={tab === 'qr'} className={`tab${tab === 'qr' ? ' tab-active' : ''}`} onClick={() => setTab('qr')}>Invite</button>
         <button role="tab" aria-selected={tab === 'scan'} className={`tab${tab === 'scan' ? ' tab-active' : ''}`} onClick={() => setTab('scan')}>Scan</button>

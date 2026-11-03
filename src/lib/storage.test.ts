@@ -1,10 +1,11 @@
 import { beforeEach, describe, expect, it } from 'vitest'
 import {
+  withPrints,
   _resetCache, loadState, withFriend, withName, withReading, withUnlocked, withoutFriend,
   type AppState, type HistoryEntry,
 } from './storage'
 
-const base = (): AppState => ({ userId: 'u', userSecret: 'us', inviteSecret: 'is', revoked: [], name: '', onboarded: false, friends: {}, history: {}, unlocked: [] })
+const base = (): AppState => ({ userId: 'u', userSecret: 'us', inviteSecret: 'is', revoked: [], name: '', onboarded: false, friends: {}, history: {}, unlocked: [], prints: {} })
 const e = (date: string, mine = 'm'): HistoryEntry => ({ date, mine, theirs: 't', bridge: 'b' })
 
 describe('updaters', () => {
@@ -101,5 +102,16 @@ describe('unlocked cards', () => {
     localStorage.setItem('tarottwin:v1', JSON.stringify({ userId: 'u', name: 'x', onboarded: true, friends: {}, history: { f: [e('2025-01-01', 'cups-01')] } }))
     _resetCache()
     expect(loadState().unlocked.sort()).toEqual(['b', 'cups-01', 't'])
+  })
+})
+
+describe('pulled prints', () => {
+  it('records each print once and keeps different ones', () => {
+    const a = { serial: 6, rarity: 'GOLD' as const }
+    let s = withPrints(base(), ['x', a])
+    expect(withPrints(s, ['x', { ...a }])).toBe(s)
+    s = withPrints(s, ['x', { serial: 7, rarity: 'GOLD' }], ['y', a])
+    expect(s.prints.x).toHaveLength(2)
+    expect(s.prints.y).toEqual([a])
   })
 })

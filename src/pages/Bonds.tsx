@@ -9,9 +9,12 @@ export default function Bonds() {
   const list = Object.values(friends).sort((a, b) => (history[b.id]?.[0]?.date ?? '').localeCompare(history[a.id]?.[0]?.date ?? '') || a.name.localeCompare(b.name))
   return (
     <main className="page bonds">
-      <h1>Bonds</h1>
+      <div className="bonds-head">
+        <h1>Bonds</h1>
+        <Link className="btn btn-gold" to="/twin">Invite</Link>
+      </div>
       {list.length === 0 ? (
-        <p className="muted">No bonds yet. Share your invite from the Twin tab.</p>
+        <p className="muted">No bonds yet. Invite a friend to start one.</p>
       ) : (
         <ul className="bond-list">
           {list.map((f) => {

@@ -2,6 +2,7 @@ import type { Card } from '../data/cards'
 import { bitmap } from '../lib/foil'
 import { DECK } from '../data/cards'
 import { uniformLineSize, uniformSize, wrapLines } from './cardText'
+import { faceKey, printTag, type Print } from '../lib/print'
 import type { CardTextures, FoilManifest, RawPixels } from './types'
 
 // ---- the name strip, in the printed title band's colours of the original cards
@@ -108,7 +109,7 @@ function flavorSize(width: number, height: number, measure: (t: string, s: numbe
   return s
 }
 
-function drawFrame(l: Layout, card: Card): HTMLCanvasElement {
+function drawFrame(l: Layout, card: Card, print?: Print): HTMLCanvasElement {
   const c = canvas(l.w, l.h)
   const ctx = c.getContext('2d')!
   silhouette(ctx, l)
@@ -202,6 +203,15 @@ function drawFrame(l: Layout, card: Card): HTMLCanvasElement {
   ctx.textAlign = 'center'
   ctx.textBaseline = 'middle'
   lines.forEach((ln, i) => ctx.fillText(ln, x.x + x.w / 2, x.y + x.h / 2 - total / 2 + lh * (i + 0.5)))
+  // serial and rarity, e.g. 006-GOLD, in the margin under the meaning box
+  if (print) {
+    ctx.font = `600 13px ${FONT}`
+    if ('letterSpacing' in ctx) (ctx as unknown as { letterSpacing: string }).letterSpacing = '3px'
+    ctx.fillStyle = VIOLET_DARK
+    ctx.textBaseline = 'middle'
+    ctx.fillText(printTag(print), l.w / 2 + 1.5, x.y + x.h + 11)
+    if ('letterSpacing' in ctx) (ctx as unknown as { letterSpacing: string }).letterSpacing = '0px'
+  }
   return c
 }
 
@@ -276,11 +286,12 @@ interface Entry { layers: Promise<FaceLayers>; fx?: Promise<RawPixels>; ready?: 
 const LRU_MAX = 6
 const faces = new Map<string, Entry>()
 
-function entry(m: FoilManifest, card: Card): Entry {
-  const hit = faces.get(card.id)
+function entry(m: FoilManifest, card: Card, print?: Print): Entry {
+  const key = faceKey(card, print)
+  const hit = faces.get(key)
   if (hit) {
-    faces.delete(card.id)
-    faces.set(card.id, hit)
+    faces.delete(key)
+    faces.set(key, hit)
     return hit
   }
   const c = m.cards[card.id]
@@ -289,24 +300,24 @@ function entry(m: FoilManifest, card: Card): Entry {
   const layers = Promise.all([bitmap(c.art, true), ensureFonts()]).then(async ([art]) => {
     const artCanvas = drawArt(layout, art)
     await yieldToMain()
-    return { layout, art: artCanvas, frame: drawFrame(layout, card) }
+    return { layout, art: artCanvas, frame: drawFrame(layout, card, print) }
   })
   const e: Entry = { layers }
-  layers.catch(() => faces.delete(card.id))
-  faces.set(card.id, e)
+  layers.catch(() => faces.delete(key))
+  faces.set(key, e)
   // the oldest faces drop out; their GPU textures belong to the renderer that uploaded them
   while (faces.size > LRU_MAX) faces.delete(faces.keys().next().value as string)
   return e
 }
 
 /** The 2D layers only (what the DOM fallback needs). */
-export function loadFaceLayers(m: FoilManifest, card: Card): Promise<FaceLayers> {
-  return entry(m, card).layers
+export function loadFaceLayers(m: FoilManifest, card: Card, print?: Print): Promise<FaceLayers> {
+  return entry(m, card, print).layers
 }
 
 /** Flattened face (art under frame) as a data URL, for the DOM fallback. */
-export async function faceDataUrl(m: FoilManifest, card: Card): Promise<string> {
-  const { layout, art, frame } = await loadFaceLayers(m, card)
+export async function faceDataUrl(m: FoilManifest, card: Card, print?: Print): Promise<string> {
+  const { layout, art, frame } = await loadFaceLayers(m, card, print)
   const c = canvas(layout.w, layout.h)
   const ctx = c.getContext('2d')!
   ctx.drawImage(art, 0, 0)
@@ -315,8 +326,8 @@ export async function faceDataUrl(m: FoilManifest, card: Card): Promise<string> 
 }
 
 /** Textures already composed for a card, if any, so a second view (the inspector) opens with no loading. */
-export function peekTextures(cardId: string): CardTextures | null {
-  return faces.get(cardId)?.ready ?? null
+export function peekTextures(key: string): CardTextures | null {
+  return faces.get(key)?.ready ?? null
 }
 
 /** The back image is an opaque rectangle; clip it to the front's rounded silhouette so no corners show. */
@@ -334,8 +345,8 @@ function roundedBack(path: string): Promise<HTMLCanvasElement> {
   return backCache
 }
 
-export async function loadCardTextures(m: FoilManifest, card: Card): Promise<CardTextures> {
-  const e = entry(m, card)
+export async function loadCardTextures(m: FoilManifest, card: Card, print?: Print): Promise<CardTextures> {
+  const e = entry(m, card, print)
   if (e.ready) return e.ready
   const layers = await e.layers
   e.fx ??= bitmap(m.cards[card.id].foil, false).then(async (f) => { await yieldToMain(); return buildFx(layers.layout, f) })
@@ -355,20 +366,21 @@ const SMALL_MAX = 120
 const small = new Map<string, HTMLCanvasElement>()
 
 /** A small flattened face (art under frame) for thumbnails; cached, so a grid of 78 stays cheap. */
-export async function loadSmallFace(m: FoilManifest, card: Card): Promise<HTMLCanvasElement> {
-  const hit = small.get(card.id)
+export async function loadSmallFace(m: FoilManifest, card: Card, print?: Print): Promise<HTMLCanvasElement> {
+  const key = faceKey(card, print)
+  const hit = small.get(key)
   if (hit) {
-    small.delete(card.id)
-    small.set(card.id, hit)
+    small.delete(key)
+    small.set(key, hit)
     return hit
   }
-  const { layout, art, frame } = await loadFaceLayers(m, card)
+  const { layout, art, frame } = await loadFaceLayers(m, card, print)
   const c = canvas(SMALL_W, Math.round((SMALL_W * layout.h) / layout.w))
   const ctx = c.getContext('2d')!
   ctx.imageSmoothingQuality = 'high'
   ctx.drawImage(art, 0, 0, c.width, c.height)
   ctx.drawImage(frame, 0, 0, c.width, c.height)
-  small.set(card.id, c)
+  small.set(key, c)
   while (small.size > SMALL_MAX) small.delete(small.keys().next().value as string)
   return c
 }

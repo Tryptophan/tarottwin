@@ -1,5 +1,6 @@
 import type { Card } from '../data/cards'
 import type { FoilManifest } from '../gl/types'
+import { RARITY_FINISH, type Print } from './print'
 
 const BASE = import.meta.env.BASE_URL
 export const assetUrl = (p: string) => `${BASE}${p}`
@@ -14,9 +15,9 @@ export function loadManifest(): Promise<FoilManifest | null> {
   return manifestPromise
 }
 
-/** Holo for every card. */
-export function finishFor(_card: Card): number {
-  return 0
+/** A printed card takes its rarity's finish; a card with no print (the Collection) is holo. */
+export function finishFor(_card: Card, print?: Print): number {
+  return print ? RARITY_FINISH[print.rarity] : 0
 }
 
 const LRU_MAX = 24

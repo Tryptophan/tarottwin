@@ -18,7 +18,7 @@ export default function TwinReadings() {
     <section className="home-twins">
       <h2>Twin readings</h2>
       {rows.length === 0 ? (
-        <p className="muted">Invite a friend from the <Link to="/twin">Twin tab</Link> to read together.</p>
+        <p className="muted">Invite a friend from <Link to="/bonds">Bonds</Link> to read together.</p>
       ) : (
         <ul className="bond-list">
           {rows.map((r) => (

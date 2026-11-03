@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import type { Card } from '../data/cards'
 import { faceDataUrl } from '../gl/cardFace'
 import { assetUrl, loadManifest } from '../lib/foil'
+import { printTag, type Print } from '../lib/print'
 import { CardSigil } from './CardSigil'
 import { Sparkles } from './Sparkles'
 
@@ -13,9 +14,10 @@ function CardBack() {
 }
 
 export function TarotCardFallback({
-  card, revealed, onReveal, onInspect, label, size = 'md',
+  card, print, revealed, onReveal, onInspect, label, size = 'md',
 }: {
   card: Card
+  print?: Print
   revealed: boolean
   onReveal?: () => void
   onInspect?: () => void
@@ -32,11 +34,11 @@ export function TarotCardFallback({
   useEffect(() => {
     let dead = false
     loadManifest()
-      .then((m) => (m ? faceDataUrl(m, card) : null))
+      .then((m) => (m ? faceDataUrl(m, card, print) : null))
       .then((u) => !dead && setFaceUrl(u))
       .catch(() => {})
     return () => { dead = true }
-  }, [card])
+  }, [card, print && printTag(print)])
 
   useEffect(() => {
     let t: number | undefined

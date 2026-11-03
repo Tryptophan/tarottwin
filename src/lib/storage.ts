@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react'
 import { randomHex } from './crypto'
+import type { Print } from './print'
 import { STUBBED, stubState } from './stub'
 
 export interface Friend {
@@ -57,6 +58,8 @@ export interface AppState {
   history: Record<string, HistoryEntry[]>
   /** ids of the cards unlocked so far (daily or in a Twin reading): the Collection unlocks them */
   unlocked: string[]
+  /** every print pulled so far, by card id (daily or in a Twin reading); the Collection counts them */
+  prints: Record<string, Print[]>
 }
 
 // stubbed mode (npm run dev:stubbed) keeps to its own key so a real profile is never touched
@@ -69,7 +72,7 @@ export function generateUserId(): string {
 }
 
 function fresh(): AppState {
-  return { userId: generateUserId(), userSecret: randomHex(32), name: '', onboarded: false, friends: {}, inviteSecret: randomHex(16), revoked: [], history: {}, unlocked: [] }
+  return { userId: generateUserId(), userSecret: randomHex(32), name: '', onboarded: false, friends: {}, inviteSecret: randomHex(16), revoked: [], history: {}, unlocked: [], prints: {} }
 }
 
 export function loadState(): AppState {
@@ -90,7 +93,7 @@ export function loadState(): AppState {
         const unlocked = parsed.unlocked ?? [...new Set(Object.values(parsed.history ?? {}).flat().flatMap((e) => [e.mine, e.theirs, e.bridge]))]
         const state: AppState = {
           ...fresh(), ...parsed, userId: parsed.userId, userSecret: parsed.userSecret || randomHex(32),
-          inviteSecret: parsed.inviteSecret || randomHex(16), revoked: parsed.revoked ?? [], friends, history, unlocked,
+          inviteSecret: parsed.inviteSecret || randomHex(16), revoked: parsed.revoked ?? [], friends, history, unlocked, prints: parsed.prints ?? {},
         }
         // write the migration back, or freshly made secrets would change on every load
         if (!parsed.userSecret || !parsed.inviteSecret) persist(state)
@@ -178,6 +181,17 @@ export function withReading(s: AppState, friendId: string, entry: HistoryEntry):
 export function withUnlocked(s: AppState, ...ids: string[]): AppState {
   const fresh = ids.filter((id) => !s.unlocked.includes(id))
   return fresh.length ? { ...s, unlocked: [...s.unlocked, ...new Set(fresh)] } : s
+}
+
+/** Records pulled prints (card id + print). A print already held (same serial and rarity) is not counted twice. */
+export function withPrints(s: AppState, ...pulled: Array<[string, Print]>): AppState {
+  let prints = s.prints
+  for (const [id, p] of pulled) {
+    const have = prints[id] ?? []
+    if (have.some((h) => h.serial === p.serial && h.rarity === p.rarity)) continue
+    prints = { ...prints, [id]: [...have, p] }
+  }
+  return prints === s.prints ? s : { ...s, prints }
 }
 
 export function withoutFriend(s: AppState, id: string): AppState {

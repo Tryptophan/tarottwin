@@ -1,5 +1,6 @@
-import { DECK } from '../data/cards'
+import { CARD_BY_ID, DECK } from '../data/cards'
 import { utcDate } from './dates'
+import { bridgeSeed, dailySeed, printFor, RARITIES, RUN_SIZE, type Print } from './print'
 import { pairReading } from './reading'
 import type { AppState, Friend, HistoryEntry } from './storage'
 
@@ -69,9 +70,27 @@ export function stubState(now: Date = new Date()): AppState {
         return { date, mine: r.mine.id, theirs: r.theirs.id, bridge: r.bridge.id }
       })
   })
-  // some of the deck unlocked: every card from the readings, plus a spread of the rest
+  // some of the deck unlocked: every card from the readings, plus the rest
   const fromReadings = Object.values(history).flat().flatMap((e) => [e.mine, e.theirs, e.bridge])
-  const spread = DECK.filter((_, i) => i % 5 === 0).map((c) => c.id)
+  const spread = DECK.map((c) => c.id)
+  // prints: those of the readings, plus a few extra pulls of the spread cards so the Collection shows counts
+  const prints: Record<string, Print[]> = {}
+  const add = (id: string, p: Print) => {
+    const have = (prints[id] ??= [])
+    if (!have.some((h) => h.serial === p.serial && h.rarity === p.rarity)) have.push(p)
+  }
+  for (const [fid, list] of Object.entries(history)) {
+    for (const e of list) {
+      add(e.mine, printFor(dailySeed(STUB_USER_ID, e.date), CARD_BY_ID.get(e.mine)!))
+      add(e.theirs, printFor(dailySeed(fid, e.date), CARD_BY_ID.get(e.theirs)!))
+      add(e.bridge, printFor(bridgeSeed(STUB_USER_ID, fid, e.date), CARD_BY_ID.get(e.bridge)!))
+    }
+  }
+  // every card in every rarity at least once, plus a second copy of some so the counts differ
+  DECK.forEach((c, i) => {
+    RARITIES.forEach((rarity, r) => add(c.id, { serial: 1 + ((i * 7 + r * 13) % RUN_SIZE), rarity }))
+    if (i % 3 === 0) add(c.id, { serial: 100 - (i % RUN_SIZE), rarity: RARITIES[i % RARITIES.length] })
+  })
   return {
     userId: STUB_USER_ID,
     userSecret: hexSecret(250),
@@ -82,5 +101,6 @@ export function stubState(now: Date = new Date()): AppState {
     friends,
     history,
     unlocked: [...new Set([...fromReadings, ...spread])],
+    prints,
   }
 }
