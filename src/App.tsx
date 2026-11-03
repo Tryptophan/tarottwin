@@ -10,6 +10,7 @@ import { UpdateBanner } from './components/UpdateBanner'
 import { OfflineStatus } from './components/OfflineStatus'
 import Onboarding from './pages/Onboarding'
 import Home from './pages/Home'
+import Oracle from './pages/Oracle'
 import Twin from './pages/Twin'
 import TwinReading from './pages/TwinReading'
 import Join from './pages/Join'
@@ -37,6 +38,7 @@ export default function App() {
           <TopBar />
           <Routes>
             <Route path="/" element={<Home />} />
+            <Route path="/oracle" element={<Oracle />} />
             <Route path="/twin" element={<Twin />} />
             <Route path="/twin/:id" element={<TwinReading />} />
             <Route path="/join/:secret" element={<Join />} />

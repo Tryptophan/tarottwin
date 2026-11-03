@@ -3,7 +3,7 @@ import { buildDebugReport, getLog, log, redactState } from './debuglog'
 import { withFriend, type AppState } from './storage'
 
 const state = (): AppState => {
-  const s: AppState = { userId: 'aaaaaaaaaaaaaaaaaaaa', userSecret: 'u'.repeat(64), inviteSecret: 'i'.repeat(32), revoked: ['r'.repeat(32)], name: 'Ann', onboarded: true, friends: {}, history: {}, unlocked: ['the-fool'], prints: {} }
+  const s: AppState = { userId: 'aaaaaaaaaaaaaaaaaaaa', userSecret: 'u'.repeat(64), inviteSecret: 'i'.repeat(32), revoked: ['r'.repeat(32)], name: 'Ann', onboarded: true, friends: {}, history: {}, unlocked: ['the-fool'], prints: {}, oracle: [] }
   return withFriend(s, 'bbbbbbbbbbbbbbbbbbbb', 'Bob', 'f'.repeat(32), 'v'.repeat(32))
 }
 

@@ -102,5 +102,6 @@ export function stubState(now: Date = new Date()): AppState {
     history,
     unlocked: [...new Set([...fromReadings, ...spread])],
     prints,
+    oracle: [],
   }
 }

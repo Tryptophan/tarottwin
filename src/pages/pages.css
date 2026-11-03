@@ -92,3 +92,30 @@
 .filter-sep { flex: none; width: 1px; align-self: stretch; margin: 4px 2px; background: var(--border); }
 .collection-empty { text-align: center; margin: 28px 8px; }
 .prose { font-style: italic; text-align: center; line-height: 1.5; margin: 1rem auto; max-width: 34ch; color: var(--gold-soft); }
+
+/* Oracle */
+.oracle-ask { display: grid; gap: .5rem; margin: 1rem 0; }
+.oracle-ask .textarea { resize: none; }
+.oracle-count { text-align: right; margin: 0; font-size: .8rem; }
+.oracle-q { margin-top: .25rem; }
+.oracle-rev { transform: rotate(180deg); }
+.oracle-verdict { text-align: center; font-family: var(--font-head); font-size: 2rem; letter-spacing: .06em; text-transform: uppercase; margin: .5rem 0 1rem; color: var(--gold); text-shadow: 0 0 18px rgba(198, 214, 95, .55); }
+.oracle-no { color: var(--violet-200); text-shadow: 0 0 18px rgba(177, 157, 194, .5); }
+.oracle-maybe { color: var(--gold-soft); }
+.oracle-journal { margin-top: 1.75rem; }
+.oracle-journal h2 { font-size: 1.05rem; margin: 0 0 .6rem; }
+.oracle-entry { display: flex; justify-content: space-between; align-items: center; gap: .75rem; padding: .7rem .9rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.oracle-entry > div { min-width: 0; font-size: .9rem; overflow-wrap: anywhere; }
+
+/* Shop */
+.shop-hero { display: flex; gap: 1rem; align-items: center; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.shop-hero img { flex: none; height: auto; border-radius: 8px; }
+.shop-hero h2 { margin: 0 0 .25rem; font-size: 1.15rem; }
+.shop-hero p { margin: 0 0 .75rem; }
+.shop-h { font-size: 1.05rem; margin: 1.5rem 0 .6rem; }
+.shop-item { display: flex; justify-content: space-between; align-items: center; gap: .75rem; padding: .7rem .9rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.shop-note { font-size: .8rem; text-align: center; margin-top: 1.5rem; }
+.shop-buy { flex: none; white-space: nowrap; }
+.shop-buy-short { width: 5.5rem; padding-inline: 0; }
+.shop-soon { flex: none; white-space: nowrap; }
+.shop-item > div { min-width: 0; }

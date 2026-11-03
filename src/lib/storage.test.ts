@@ -5,7 +5,7 @@ import {
   type AppState, type HistoryEntry,
 } from './storage'
 
-const base = (): AppState => ({ userId: 'u', userSecret: 'us', inviteSecret: 'is', revoked: [], name: '', onboarded: false, friends: {}, history: {}, unlocked: [], prints: {} })
+const base = (): AppState => ({ userId: 'u', userSecret: 'us', inviteSecret: 'is', revoked: [], name: '', onboarded: false, friends: {}, history: {}, unlocked: [], prints: {}, oracle: [] })
 const e = (date: string, mine = 'm'): HistoryEntry => ({ date, mine, theirs: 't', bridge: 'b' })
 
 describe('updaters', () => {

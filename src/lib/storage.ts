@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react'
 import { randomHex } from './crypto'
+import type { OracleEntry } from './oracle'
 import type { Print } from './print'
 import { STUBBED, stubState } from './stub'
 
@@ -60,6 +61,8 @@ export interface AppState {
   unlocked: string[]
   /** every print pulled so far, by card id (daily or in a Twin reading); the Collection counts them */
   prints: Record<string, Print[]>
+  /** yes/no readings, newest first: the journal, and the last one starts the 6-hour wait */
+  oracle: OracleEntry[]
 }
 
 // stubbed mode (npm run dev:stubbed) keeps to its own key so a real profile is never touched
@@ -72,7 +75,7 @@ export function generateUserId(): string {
 }
 
 function fresh(): AppState {
-  return { userId: generateUserId(), userSecret: randomHex(32), name: '', onboarded: false, friends: {}, inviteSecret: randomHex(16), revoked: [], history: {}, unlocked: [], prints: {} }
+  return { userId: generateUserId(), userSecret: randomHex(32), name: '', onboarded: false, friends: {}, inviteSecret: randomHex(16), revoked: [], history: {}, unlocked: [], prints: {}, oracle: [] }
 }
 
 export function loadState(): AppState {
@@ -93,7 +96,7 @@ export function loadState(): AppState {
         const unlocked = parsed.unlocked ?? [...new Set(Object.values(parsed.history ?? {}).flat().flatMap((e) => [e.mine, e.theirs, e.bridge]))]
         const state: AppState = {
           ...fresh(), ...parsed, userId: parsed.userId, userSecret: parsed.userSecret || randomHex(32),
-          inviteSecret: parsed.inviteSecret || randomHex(16), revoked: parsed.revoked ?? [], friends, history, unlocked, prints: parsed.prints ?? {},
+          inviteSecret: parsed.inviteSecret || randomHex(16), revoked: parsed.revoked ?? [], friends, history, unlocked, prints: parsed.prints ?? {}, oracle: Array.isArray(parsed.oracle) ? parsed.oracle : [],
         }
         // write the migration back, or freshly made secrets would change on every load
         if (!parsed.userSecret || !parsed.inviteSecret) persist(state)
@@ -192,6 +195,12 @@ export function withPrints(s: AppState, ...pulled: Array<[string, Print]>): AppS
     prints = { ...prints, [id]: [...have, p] }
   }
   return prints === s.prints ? s : { ...s, prints }
+}
+
+/** Adds a yes/no reading to the journal (one per 6-hour window; a repeat for the same window is ignored). */
+export function withOracle(s: AppState, e: OracleEntry): AppState {
+  if (s.oracle.some((o) => o.at === e.at)) return s
+  return { ...s, oracle: [e, ...s.oracle].sort((a, b) => b.at - a.at).slice(0, 200) }
 }
 
 export function withoutFriend(s: AppState, id: string): AppState {
