@@ -1,0 +1,323 @@
+{
+ "aspect": 0.5795454545454546,
+ "artAspect": 0.6196006113769271,
+ "back": {
+  "art": "foil/back/art.webp",
+  "fx": "foil/back/fx.webp",
+  "normal": "foil/back/normal.webp"
+ },
+ "cards": {
+  "cups-01": {
+   "art": "foil/cups-01/art.webp",
+   "foil": "foil/cups-01/foil.webp"
+  },
+  "cups-02": {
+   "art": "foil/cups-02/art.webp",
+   "foil": "foil/cups-02/foil.webp"
+  },
+  "cups-03": {
+   "art": "foil/cups-03/art.webp",
+   "foil": "foil/cups-03/foil.webp"
+  },
+  "cups-04": {
+   "art": "foil/cups-04/art.webp",
+   "foil": "foil/cups-04/foil.webp"
+  },
+  "cups-05": {
+   "art": "foil/cups-05/art.webp",
+   "foil": "foil/cups-05/foil.webp"
+  },
+  "cups-06": {
+   "art": "foil/cups-06/art.webp",
+   "foil": "foil/cups-06/foil.webp"
+  },
+  "cups-07": {
+   "art": "foil/cups-07/art.webp",
+   "foil": "foil/cups-07/foil.webp"
+  },
+  "cups-08": {
+   "art": "foil/cups-08/art.webp",
+   "foil": "foil/cups-08/foil.webp"
+  },
+  "cups-09": {
+   "art": "foil/cups-09/art.webp",
+   "foil": "foil/cups-09/foil.webp"
+  },
+  "cups-10": {
+   "art": "foil/cups-10/art.webp",
+   "foil": "foil/cups-10/foil.webp"
+  },
+  "cups-11": {
+   "art": "foil/cups-11/art.webp",
+   "foil": "foil/cups-11/foil.webp"
+  },
+  "cups-12": {
+   "art": "foil/cups-12/art.webp",
+   "foil": "foil/cups-12/foil.webp"
+  },
+  "cups-13": {
+   "art": "foil/cups-13/art.webp",
+   "foil": "foil/cups-13/foil.webp"
+  },
+  "cups-14": {
+   "art": "foil/cups-14/art.webp",
+   "foil": "foil/cups-14/foil.webp"
+  },
+  "major-00-the-fool": {
+   "art": "foil/major-00-the-fool/art.webp",
+   "foil": "foil/major-00-the-fool/foil.webp"
+  },
+  "major-01-the-magician": {
+   "art": "foil/major-01-the-magician/art.webp",
+   "foil": "foil/major-01-the-magician/foil.webp"
+  },
+  "major-02-the-high-priestess": {
+   "art": "foil/major-02-the-high-priestess/art.webp",
+   "foil": "foil/major-02-the-high-priestess/foil.webp"
+  },
+  "major-03-the-empress": {
+   "art": "foil/major-03-the-empress/art.webp",
+   "foil": "foil/major-03-the-empress/foil.webp"
+  },
+  "major-04-the-emperor": {
+   "art": "foil/major-04-the-emperor/art.webp",
+   "foil": "foil/major-04-the-emperor/foil.webp"
+  },
+  "major-05-the-hierophant": {
+   "art": "foil/major-05-the-hierophant/art.webp",
+   "foil": "foil/major-05-the-hierophant/foil.webp"
+  },
+  "major-06-the-lovers": {
+   "art": "foil/major-06-the-lovers/art.webp",
+   "foil": "foil/major-06-the-lovers/foil.webp"
+  },
+  "major-07-the-chariot": {
+   "art": "foil/major-07-the-chariot/art.webp",
+   "foil": "foil/major-07-the-chariot/foil.webp"
+  },
+  "major-08-strength": {
+   "art": "foil/major-08-strength/art.webp",
+   "foil": "foil/major-08-strength/foil.webp"
+  },
+  "major-09-the-hermit": {
+   "art": "foil/major-09-the-hermit/art.webp",
+   "foil": "foil/major-09-the-hermit/foil.webp"
+  },
+  "major-10-wheel-of-fortune": {
+   "art": "foil/major-10-wheel-of-fortune/art.webp",
+   "foil": "foil/major-10-wheel-of-fortune/foil.webp"
+  },
+  "major-11-justice": {
+   "art": "foil/major-11-justice/art.webp",
+   "foil": "foil/major-11-justice/foil.webp"
+  },
+  "major-12-the-hanged-man": {
+   "art": "foil/major-12-the-hanged-man/art.webp",
+   "foil": "foil/major-12-the-hanged-man/foil.webp"
+  },
+  "major-13-death": {
+   "art": "foil/major-13-death/art.webp",
+   "foil": "foil/major-13-death/foil.webp"
+  },
+  "major-14-temperance": {
+   "art": "foil/major-14-temperance/art.webp",
+   "foil": "foil/major-14-temperance/foil.webp"
+  },
+  "major-15-the-devil": {
+   "art": "foil/major-15-the-devil/art.webp",
+   "foil": "foil/major-15-the-devil/foil.webp"
+  },
+  "major-16-the-tower": {
+   "art": "foil/major-16-the-tower/art.webp",
+   "foil": "foil/major-16-the-tower/foil.webp"
+  },
+  "major-17-the-star": {
+   "art": "foil/major-17-the-star/art.webp",
+   "foil": "foil/major-17-the-star/foil.webp"
+  },
+  "major-18-the-moon": {
+   "art": "foil/major-18-the-moon/art.webp",
+   "foil": "foil/major-18-the-moon/foil.webp"
+  },
+  "major-19-the-sun": {
+   "art": "foil/major-19-the-sun/art.webp",
+   "foil": "foil/major-19-the-sun/foil.webp"
+  },
+  "major-20-judgement": {
+   "art": "foil/major-20-judgement/art.webp",
+   "foil": "foil/major-20-judgement/foil.webp"
+  },
+  "major-21-the-world": {
+   "art": "foil/major-21-the-world/art.webp",
+   "foil": "foil/major-21-the-world/foil.webp"
+  },
+  "pentacles-01": {
+   "art": "foil/pentacles-01/art.webp",
+   "foil": "foil/pentacles-01/foil.webp"
+  },
+  "pentacles-02": {
+   "art": "foil/pentacles-02/art.webp",
+   "foil": "foil/pentacles-02/foil.webp"
+  },
+  "pentacles-03": {
+   "art": "foil/pentacles-03/art.webp",
+   "foil": "foil/pentacles-03/foil.webp"
+  },
+  "pentacles-04": {
+   "art": "foil/pentacles-04/art.webp",
+   "foil": "foil/pentacles-04/foil.webp"
+  },
+  "pentacles-05": {
+   "art": "foil/pentacles-05/art.webp",
+   "foil": "foil/pentacles-05/foil.webp"
+  },
+  "pentacles-06": {
+   "art": "foil/pentacles-06/art.webp",
+   "foil": "foil/pentacles-06/foil.webp"
+  },
+  "pentacles-07": {
+   "art": "foil/pentacles-07/art.webp",
+   "foil": "foil/pentacles-07/foil.webp"
+  },
+  "pentacles-08": {
+   "art": "foil/pentacles-08/art.webp",
+   "foil": "foil/pentacles-08/foil.webp"
+  },
+  "pentacles-09": {
+   "art": "foil/pentacles-09/art.webp",
+   "foil": "foil/pentacles-09/foil.webp"
+  },
+  "pentacles-10": {
+   "art": "foil/pentacles-10/art.webp",
+   "foil": "foil/pentacles-10/foil.webp"
+  },
+  "pentacles-11": {
+   "art": "foil/pentacles-11/art.webp",
+   "foil": "foil/pentacles-11/foil.webp"
+  },
+  "pentacles-12": {
+   "art": "foil/pentacles-12/art.webp",
+   "foil": "foil/pentacles-12/foil.webp"
+  },
+  "pentacles-13": {
+   "art": "foil/pentacles-13/art.webp",
+   "foil": "foil/pentacles-13/foil.webp"
+  },
+  "pentacles-14": {
+   "art": "foil/pentacles-14/art.webp",
+   "foil": "foil/pentacles-14/foil.webp"
+  },
+  "swords-01": {
+   "art": "foil/swords-01/art.webp",
+   "foil": "foil/swords-01/foil.webp"
+  },
+  "swords-02": {
+   "art": "foil/swords-02/art.webp",
+   "foil": "foil/swords-02/foil.webp"
+  },
+  "swords-03": {
+   "art": "foil/swords-03/art.webp",
+   "foil": "foil/swords-03/foil.webp"
+  },
+  "swords-04": {
+   "art": "foil/swords-04/art.webp",
+   "foil": "foil/swords-04/foil.webp"
+  },
+  "swords-05": {
+   "art": "foil/swords-05/art.webp",
+   "foil": "foil/swords-05/foil.webp"
+  },
+  "swords-06": {
+   "art": "foil/swords-06/art.webp",
+   "foil": "foil/swords-06/foil.webp"
+  },
+  "swords-07": {
+   "art": "foil/swords-07/art.webp",
+   "foil": "foil/swords-07/foil.webp"
+  },
+  "swords-08": {
+   "art": "foil/swords-08/art.webp",
+   "foil": "foil/swords-08/foil.webp"
+  },
+  "swords-09": {
+   "art": "foil/swords-09/art.webp",
+   "foil": "foil/swords-09/foil.webp"
+  },
+  "swords-10": {
+   "art": "foil/swords-10/art.webp",
+   "foil": "foil/swords-10/foil.webp"
+  },
+  "swords-11": {
+   "art": "foil/swords-11/art.webp",
+   "foil": "foil/swords-11/foil.webp"
+  },
+  "swords-12": {
+   "art": "foil/swords-12/art.webp",
+   "foil": "foil/swords-12/foil.webp"
+  },
+  "swords-13": {
+   "art": "foil/swords-13/art.webp",
+   "foil": "foil/swords-13/foil.webp"
+  },
+  "swords-14": {
+   "art": "foil/swords-14/art.webp",
+   "foil": "foil/swords-14/foil.webp"
+  },
+  "wands-01": {
+   "art": "foil/wands-01/art.webp",
+   "foil": "foil/wands-01/foil.webp"
+  },
+  "wands-02": {
+   "art": "foil/wands-02/art.webp",
+   "foil": "foil/wands-02/foil.webp"
+  },
+  "wands-03": {
+   "art": "foil/wands-03/art.webp",
+   "foil": "foil/wands-03/foil.webp"
+  },
+  "wands-04": {
+   "art": "foil/wands-04/art.webp",
+   "foil": "foil/wands-04/foil.webp"
+  },
+  "wands-05": {
+   "art": "foil/wands-05/art.webp",
+   "foil": "foil/wands-05/foil.webp"
+  },
+  "wands-06": {
+   "art": "foil/wands-06/art.webp",
+   "foil": "foil/wands-06/foil.webp"
+  },
+  "wands-07": {
+   "art": "foil/wands-07/art.webp",
+   "foil": "foil/wands-07/foil.webp"
+  },
+  "wands-08": {
+   "art": "foil/wands-08/art.webp",
+   "foil": "foil/wands-08/foil.webp"
+  },
+  "wands-09": {
+   "art": "foil/wands-09/art.webp",
+   "foil": "foil/wands-09/foil.webp"
+  },
+  "wands-10": {
+   "art": "foil/wands-10/art.webp",
+   "foil": "foil/wands-10/foil.webp"
+  },
+  "wands-11": {
+   "art": "foil/wands-11/art.webp",
+   "foil": "foil/wands-11/foil.webp"
+  },
+  "wands-12": {
+   "art": "foil/wands-12/art.webp",
+   "foil": "foil/wands-12/foil.webp"
+  },
+  "wands-13": {
+   "art": "foil/wands-13/art.webp",
+   "foil": "foil/wands-13/foil.webp"
+  },
+  "wands-14": {
+   "art": "foil/wands-14/art.webp",
+   "foil": "foil/wands-14/foil.webp"
+  }
+ }
+}
