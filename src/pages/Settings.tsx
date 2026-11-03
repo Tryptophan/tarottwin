@@ -1,9 +1,29 @@
 import { useLayoutEffect, useRef, useState } from 'react'
 import { downloadForOffline, useOffline } from '../lib/offline'
+import { INSTALL_STEPS, promptInstall, useInstallWay } from '../lib/pwa'
 import { buildDebugReport } from '../lib/debuglog'
 import { getState } from '../lib/storage'
 import { useRelayStatus } from '../net/runtime'
 import { resetAll, update, useAppState, withName } from '../lib/storage'
+
+/** Install-as-app: a real button where the browser offers one, otherwise the steps for this browser. */
+function InstallApp() {
+  const way = useInstallWay()
+  if (way === 'none') return null
+  return (
+    <div className="settings-block">
+      <label>Install</label>
+      {way === 'prompt' ? (
+        <div className="row">
+          <span className="muted">Add Tarot Twin to your home screen to open it like an app, even offline.</span>
+          <button className="btn btn-ghost" onClick={() => void promptInstall()}>Install</button>
+        </div>
+      ) : (
+        <p className="muted">{INSTALL_STEPS[way]}</p>
+      )}
+    </div>
+  )
+}
 
 /** Your full ID, or `abcdef…1234` when the full one does not fit the row. */
 function FitId({ id }: { id: string }) {
@@ -64,6 +84,7 @@ export default function Settings() {
           )}
         </div>
       </div>
+      <InstallApp />
       <div className="settings-block">
         <label>Sync</label>
         <p className="muted">Names and Twin reading dates sync with friends through {relays.total} public relays, end-to-end encrypted. {relays.connected} connected.</p>

@@ -32,10 +32,14 @@ const ITEMS = [
   },
   {
     to: '/collection', label: 'Cards', end: false,
-    // a fanned pair of cards
+    // a fanned pair of cards; the back card is masked where the front one overlaps, so no fill is needed
     icon: svg(<>
-      <rect x="4.5" y="5" width="10" height="15" rx="2" transform="rotate(-10 9.500 12.500)" />
-      <rect x="9.500" y="4" width="10" height="15" rx="2" transform="rotate(8 14.500 11.500)" fill="#170a24" />
+      <mask id="nav-cards-cut" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24">
+        <rect width="24" height="24" fill="#fff" />
+        <rect x="9.500" y="4" width="10" height="15" rx="2" transform="rotate(8 14.500 11.500)" fill="#000" stroke="#000" strokeWidth="3" />
+      </mask>
+      <rect x="4.5" y="5" width="10" height="15" rx="2" transform="rotate(-10 9.500 12.500)" mask="url(#nav-cards-cut)" />
+      <rect x="9.500" y="4" width="10" height="15" rx="2" transform="rotate(8 14.500 11.500)" />
     </>),
   },
   {
