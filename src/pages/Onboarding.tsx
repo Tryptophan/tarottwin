@@ -16,8 +16,7 @@ export default function Onboarding() {
           if (name.trim()) go(name.trim())
         }}
       >
-        <label htmlFor="name">What should friends call you?</label>
-        <input id="name" className="input" value={name} maxLength={40} autoFocus required
+        <input id="name" aria-label="Your name" className="input" value={name} maxLength={40} autoFocus required
           onChange={(e) => setName(e.target.value)} placeholder="Your name" />
         <div className="row">
           <button type="submit" className="btn btn-gold" disabled={!name.trim()}>Begin</button>

@@ -311,4 +311,7 @@ label, .label { display: block; font-family: var(--font-head); font-size: 0.8rem
 .inspect-stage .tcard-wrap { --cw: inherit; }
 /* spinner over a WebGL card until its first frame (taps still reach the canvas) */
 .tcard-gl-loading { position: absolute; inset: 0; display: grid; place-items: center; pointer-events: none; border-radius: 6% / 3.5%; background: rgba(23, 10, 36, 0.85); border: 1px solid var(--border); }
+/* face-up: the flat card is already showing, so only a small spinner chip marks the foil still loading */
+.tcard-gl-loading-lite { inset: auto 8px 8px auto; width: 36px; height: 36px; border-radius: 50%; border: 0; background: rgba(23, 10, 36, 0.7); }
+.tcard-gl-loading-lite .tcard-spinner { width: 20px; height: 20px; border-width: 2px; }
 .tcard-sm .tcard-gl-loading .tcard-spinner { width: 18px; height: 18px; border-width: 2px; }

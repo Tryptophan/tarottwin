@@ -314,12 +314,27 @@ export function peekTextures(cardId: string): CardTextures | null {
   return faces.get(cardId)?.ready ?? null
 }
 
+/** The back image is an opaque rectangle; clip it to the front's rounded silhouette so no corners show. */
+let backCache: Promise<HTMLCanvasElement> | null = null
+function roundedBack(path: string): Promise<HTMLCanvasElement> {
+  backCache ??= bitmap(path, false).then((bmp) => {
+    const c = canvas(bmp.width, bmp.height)
+    const ctx = c.getContext('2d')!
+    ctx.beginPath()
+    ctx.roundRect(0, 0, bmp.width, bmp.height, (RADIUS / CARD_W) * bmp.width)
+    ctx.clip()
+    ctx.drawImage(bmp, 0, 0)
+    return c
+  })
+  return backCache
+}
+
 export async function loadCardTextures(m: FoilManifest, card: Card): Promise<CardTextures> {
   const e = entry(m, card)
   if (e.ready) return e.ready
   const layers = await e.layers
   e.fx ??= bitmap(m.cards[card.id].foil, false).then((f) => buildFx(layers.layout, f))
-  const [fx, bart, bfx] = await Promise.all([e.fx, bitmap(m.back.art, true), bitmap(m.back.fx, false)])
+  const [fx, bart, bfx] = await Promise.all([e.fx, roundedBack(m.back.art), bitmap(m.back.fx, false)])
   e.ready = {
     aspect: m.aspect,
     front: { art: layers.art, fx, normal: flatNormal() },

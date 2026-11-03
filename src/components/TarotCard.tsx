@@ -345,7 +345,9 @@ function TarotCardGL(props: Props) {
           <div className="tcard-gl" style={{ aspectRatio: String(textures.aspect) }}>
             {revealed && !drawn && <canvas ref={flatRef} className="tcard-flat" aria-hidden="true" />}
             <canvas ref={canvasRef} className="tcard-gl-canvas" role="button" tabIndex={0} aria-label={aria} onKeyDown={onKey} />
-            {!drawn && !revealed && <div className="tcard-gl-loading" aria-busy="true"><span className="tcard-spinner" /></div>}
+            {!drawn && (revealed
+              ? <div className="tcard-gl-loading tcard-gl-loading-lite" role="status" aria-label="Loading foil effect"><span className="tcard-spinner" /></div>
+              : <div className="tcard-gl-loading" aria-busy="true"><span className="tcard-spinner" /></div>)}
             <Sparkles burst={burst} />
           </div>
           {label && <span className="tcard-label">{label}</span>}
