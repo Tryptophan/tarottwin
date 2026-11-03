@@ -12,6 +12,7 @@ import TwinReading from './pages/TwinReading'
 import Collection from './pages/Collection'
 import Bonds from './pages/Bonds'
 import BondDetail from './pages/BondDetail'
+import Shop from './pages/Shop'
 import Settings from './pages/Settings'
 import './pages/pages.css'
 
@@ -34,6 +35,7 @@ export default function App() {
             <Route path="/collection" element={<Collection />} />
             <Route path="/bonds" element={<Bonds />} />
             <Route path="/bonds/:id" element={<BondDetail />} />
+            <Route path="/shop" element={<Shop />} />
             <Route path="/settings" element={<Settings />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>

@@ -31,11 +31,19 @@ const ITEMS = [
     icon: svg(<path d="M12 12c-2-3-3.5-4.5-5.5-4.5a4.5 4.5 0 0 0 0 9c2 0 3.5-1.500 5.500-4.500zm0 0c2 3 3.500 4.500 5.500 4.500a4.500 4.500 0 0 0 0-9c-2 0-3.500 1.500-5.500 4.500z" />),
   },
   {
-    to: '/collection', label: 'Collection', end: false,
+    to: '/collection', label: 'Cards', end: false,
     // a fanned pair of cards
     icon: svg(<>
       <rect x="4.5" y="5" width="10" height="15" rx="2" transform="rotate(-10 9.500 12.500)" />
       <rect x="9.500" y="4" width="10" height="15" rx="2" transform="rotate(8 14.500 11.500)" fill="#170a24" />
+    </>),
+  },
+  {
+    to: '/shop', label: 'Shop', end: false,
+    // shopping bag
+    icon: svg(<>
+      <path d="M5 8h14l-1 12H6z" />
+      <path d="M9 8V6.500a3 3 0 0 1 6 0V8" />
     </>),
   },
   {
