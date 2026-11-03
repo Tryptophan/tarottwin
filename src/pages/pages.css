@@ -109,7 +109,7 @@
 
 /* Shop */
 .shop-hero { display: flex; gap: 1rem; align-items: center; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
-.shop-hero img { flex: none; height: auto; border-radius: 8px; }
+.shop-hero .logo { flex: none; border-radius: 22px; }
 .shop-hero h2 { margin: 0 0 .25rem; font-size: 1.15rem; }
 .shop-hero p { margin: 0 0 .75rem; }
 .shop-h { font-size: 1.05rem; margin: 1.5rem 0 .6rem; }

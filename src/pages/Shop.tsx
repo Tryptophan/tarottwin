@@ -1,5 +1,5 @@
 import { ATMOSPHERE, FEATURED, type Product } from '../data/shop'
-import { assetUrl } from '../lib/foil'
+import { Logo } from '../components/Logo'
 
 function Buy({ p, short = false }: { p: Product; short?: boolean }) {
   return p.url
@@ -12,7 +12,7 @@ export default function Shop() {
     <main className="page shop">
       <h1>Shop</h1>
       <section className="shop-hero">
-        <img src={assetUrl('shop/deck.webp')} alt="The Rider Tarot Deck box" width="110" height="166" draggable={false} />
+        <Logo size={110} />
         <div>
           <h2>{FEATURED.title}</h2>
           <p className="muted">{FEATURED.blurb}</p>
