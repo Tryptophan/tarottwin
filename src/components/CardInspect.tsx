@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Card } from '../data/cards'
 import { TarotCard } from './TarotCard'
+import { holdOverlay } from '../gl/renderer'
 
 /**
  * Full-screen view of a revealed card (its details are printed on the card). It owns a history entry,
@@ -19,6 +20,7 @@ export function CardInspect({ card, onClose, locked = false }: { card: Card | nu
 
   useEffect(() => {
     if (!open) return
+    const release = holdOverlay()
     window.clearTimeout(pending.current) // StrictMode re-run: keep the entry we already pushed
     if (!pushed.current) {
       history.pushState({ ...(history.state ?? {}), inspect: true }, '')
@@ -41,6 +43,7 @@ export function CardInspect({ card, onClose, locked = false }: { card: Card | nu
     const overflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
     return () => {
+      release()
       window.removeEventListener('popstate', onPop)
       document.removeEventListener('keydown', onKey)
       document.body.style.overflow = overflow

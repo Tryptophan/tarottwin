@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import type { Card } from '../data/cards'
-import { FoilRenderer } from '../gl/renderer'
+import { isWarm, overlayOpen, releaseRenderer, retainRenderer, sharedRenderer } from '../gl/renderer'
 import type { CardTextures } from '../gl/types'
 import { loadCardTextures, loadSmallFace, peekTextures } from '../gl/cardFace'
 import { finishFor, loadManifest, lowPower } from '../lib/foil'
@@ -205,10 +205,8 @@ function TarotCardGL(props: Props) {
     const boot = (): (() => void) | undefined => {
     const canvas = canvasRef.current
     if (!canvas) return
-    let renderer: FoilRenderer
     try {
-      renderer = new FoilRenderer(canvas)
-      renderer.setTextures(textures)
+      retainRenderer() // one WebGL context is shared by every card; this card just draws into it
     } catch {
       setFailed(true)
       setActive(false)
@@ -220,7 +218,8 @@ function TarotCardGL(props: Props) {
       setBurst((b) => b + 1)
       if ('vibrate' in navigator) navigator.vibrate(15)
     }
-    const supersample = !lowPower()
+    // 4x supersampling only pays off on low-DPR screens; at 2x the extra taps just cost ~2x frame time
+    const supersample = !lowPower() && (window.devicePixelRatio || 1) < 2
     const finish = finishFor(card)
     const seed = [...card.id].reduce((a, c) => (a * 31 + c.charCodeAt(0)) % 997, 7)
     const start = performance.now()
@@ -267,9 +266,11 @@ function TarotCardGL(props: Props) {
     canvas.addEventListener('pointercancel', up)
 
     let first = true
+    const behind = !canvas.closest('.inspect')
     const frame = (now: number) => {
       raf = requestAnimationFrame(frame)
       if (document.hidden) return
+      if (behind && overlayOpen()) { last = now; return } // covered by the inspector
       const dt = clamp((now - last) / 1000, 0, 0.05)
       last = now
       const time = (now - start) / 1000
@@ -291,7 +292,12 @@ function TarotCardGL(props: Props) {
         if (p >= 1) flipStart.current = null
       }
       if (first) { first = false; setDrawn(true) }
-      renderer.draw({ yaw: base + cur.x, pitch: cur.y * Math.cos(base), time, cardScale: CARD_SCALE + lift, finish, supersample, seed })
+      try {
+        sharedRenderer().draw(canvas, card.id, textures, { yaw: base + cur.x, pitch: cur.y * Math.cos(base), time, cardScale: CARD_SCALE + lift, finish, supersample, seed })
+      } catch {
+        cancelAnimationFrame(raf)
+        setFailed(true)
+      }
     }
     const visibleNow = () => {
       cancelAnimationFrame(raf)
@@ -301,24 +307,18 @@ function TarotCardGL(props: Props) {
     frame(performance.now()) // paint synchronously: the first frame is on screen with the view
     visibleNow()
     document.addEventListener('visibilitychange', visibleNow)
-    const onLost = (e: Event) => {
-      e.preventDefault()
-      setFailed(true)
-    }
-    canvas.addEventListener('webglcontextlost', onLost)
     return () => {
       cancelAnimationFrame(raf)
       document.removeEventListener('visibilitychange', visibleNow)
-      canvas.removeEventListener('webglcontextlost', onLost)
       canvas.removeEventListener('pointerdown', down)
       canvas.removeEventListener('pointermove', move)
       canvas.removeEventListener('pointerup', up)
       canvas.removeEventListener('pointercancel', up)
-      renderer.dispose()
+      releaseRenderer()
     }
     }
-    if (revealedRef.current && flipStart.current === null && !pendingFlip.current) {
-      // the flat face is already on screen: set WebGL up after the first paint
+    if (revealedRef.current && flipStart.current === null && !pendingFlip.current && !isWarm(card.id)) {
+      // the flat face is already on screen and the GPU has nothing cached: set WebGL up after the first paint
       raf1 = requestAnimationFrame(() => { t1 = window.setTimeout(() => { stop = boot() }, 0) })
     } else stop = boot()
     return () => {

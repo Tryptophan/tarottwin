@@ -20,7 +20,7 @@ vi.mock('../lib/foil', () => ({
   finishFor: vi.fn(),
   lowPower: () => false,
 }))
-vi.mock('../gl/renderer', () => ({ FoilRenderer: class {} }))
+vi.mock('../gl/renderer', () => ({ retainRenderer() {}, isWarm: () => false, overlayOpen: () => false, holdOverlay: () => () => {}, releaseRenderer() {}, sharedRenderer: () => ({ draw() {} }) }))
 
 import { TarotCard } from './TarotCard'
 
