@@ -175,8 +175,9 @@ function TarotCardGL(props: Props) {
       } else pendingFlip.current = true // tapped while loading: flip once ready
     }
     if (!revealed) {
-      flipStart.current = null
       pendingFlip.current = false
+      // flipping back face-down: animate if drawn and it was face-up, else just snap
+      flipStart.current = prevRevealed.current && activeRef.current ? performance.now() : null
     }
     prevRevealed.current = revealed
   }, [revealed])
@@ -282,9 +283,9 @@ function TarotCardGL(props: Props) {
       let base = revealedRef.current ? 0 : Math.PI
       let lift = 0
       const fs = flipStart.current
-      if (revealedRef.current && fs !== null) {
+      if (fs !== null) {
         const p = clamp((now - fs) / FLIP_MS, 0, 1)
-        base = Math.PI * Math.pow(1 - p, 3)
+        base = revealedRef.current ? Math.PI * Math.pow(1 - p, 3) : Math.PI * (1 - Math.pow(1 - p, 3))
         lift = 0.05 * Math.sin(Math.PI * p)
         if (p >= 1) flipStart.current = null
       }

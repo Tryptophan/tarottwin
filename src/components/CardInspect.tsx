@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import type { Card } from '../data/cards'
 import { TarotCard } from './TarotCard'
@@ -14,6 +14,8 @@ export function CardInspect({ card, onClose, locked = false }: { card: Card | nu
   const onCloseRef = useRef(onClose)
   onCloseRef.current = onClose
   const open = card !== null
+  const [faceUp, setFaceUp] = useState(true)
+  useEffect(() => setFaceUp(true), [card?.id])
 
   useEffect(() => {
     if (!open) return
@@ -65,7 +67,7 @@ export function CardInspect({ card, onClose, locked = false }: { card: Card | nu
           strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
       </button>
       <div className={`inspect-stage tcard-xl${locked ? ' tcard-locked' : ''}`} onClick={(e) => e.target === e.currentTarget && close()}>
-        <TarotCard card={card} revealed size="xl" />
+        <TarotCard card={card} revealed={faceUp} size="xl" onReveal={() => setFaceUp(true)} onInspect={() => setFaceUp(false)} />
       </div>
     </div>,
     document.body,
