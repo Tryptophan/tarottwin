@@ -155,13 +155,13 @@ label, .label { display: block; font-family: var(--font-head); font-size: 0.8rem
 /* Bottom nav */
 .bottom-nav {
   position: fixed; left: 0; right: 0; bottom: 0; z-index: 20;
-  display: grid; grid-auto-flow: column; grid-auto-columns: minmax(0, 1fr); /* equal-width tabs */
+  display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); /* equal-width tabs */
   padding: 0 var(--safe-r) var(--safe-b) var(--safe-l);
   background: rgba(23, 10, 36, 0.92); backdrop-filter: blur(10px);
   border-top: 1px solid var(--border);
 }
 .bottom-nav a, .bottom-nav button, .bottom-nav-item {
-  min-width: 0; min-height: var(--nav-h); display: flex; flex-direction: column;
+  min-width: 0; overflow: hidden; min-height: var(--nav-h); display: flex; flex-direction: column;
   align-items: center; justify-content: center; gap: 2px; background: none; border: 0; cursor: pointer;
   color: var(--text-dim); text-decoration: none; font-family: var(--font-head); font-size: 0.65rem;
   letter-spacing: 0.06em; text-transform: uppercase; text-align: center;
