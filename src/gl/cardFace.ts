@@ -49,6 +49,9 @@ export function layoutFor(aspect: number, artAspect: number): Layout {
   return { w, h, art, bar, box }
 }
 
+/** Let the browser handle pending input (e.g. a navigation tap) between heavy synchronous steps. */
+const yieldToMain = () => new Promise<void>((r) => setTimeout(r, 0))
+
 function canvas(w: number, h: number) {
   const c = document.createElement('canvas')
   c.width = w
@@ -283,9 +286,11 @@ function entry(m: FoilManifest, card: Card): Entry {
   const c = m.cards[card.id]
   if (!c) throw new Error(`no foil entry for ${card.id}`)
   const layout = layoutFor(m.aspect, m.artAspect || 0.6)
-  const layers = Promise.all([bitmap(c.art, true), ensureFonts()]).then(([art]) => ({
-    layout, art: drawArt(layout, art), frame: drawFrame(layout, card),
-  }))
+  const layers = Promise.all([bitmap(c.art, true), ensureFonts()]).then(async ([art]) => {
+    const artCanvas = drawArt(layout, art)
+    await yieldToMain()
+    return { layout, art: artCanvas, frame: drawFrame(layout, card) }
+  })
   const e: Entry = { layers }
   layers.catch(() => faces.delete(card.id))
   faces.set(card.id, e)
@@ -333,8 +338,9 @@ export async function loadCardTextures(m: FoilManifest, card: Card): Promise<Car
   const e = entry(m, card)
   if (e.ready) return e.ready
   const layers = await e.layers
-  e.fx ??= bitmap(m.cards[card.id].foil, false).then((f) => buildFx(layers.layout, f))
+  e.fx ??= bitmap(m.cards[card.id].foil, false).then(async (f) => { await yieldToMain(); return buildFx(layers.layout, f) })
   const [fx, bart, bfx] = await Promise.all([e.fx, roundedBack(m.back.art), bitmap(m.back.fx, false)])
+  await yieldToMain()
   e.ready = {
     aspect: m.aspect,
     front: { art: layers.art, fx, normal: flatNormal() },

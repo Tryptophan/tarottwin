@@ -291,7 +291,7 @@ function TarotCardGL(props: Props) {
         if (p >= 1) flipStart.current = null
       }
       if (first) { first = false; setDrawn(true) }
-      renderer.draw({ yaw: base + cur.x, pitch: cur.y, time, cardScale: CARD_SCALE + lift, finish, supersample, seed })
+      renderer.draw({ yaw: base + cur.x, pitch: cur.y * Math.cos(base), time, cardScale: CARD_SCALE + lift, finish, supersample, seed })
     }
     const visibleNow = () => {
       cancelAnimationFrame(raf)

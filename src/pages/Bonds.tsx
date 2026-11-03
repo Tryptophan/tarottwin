@@ -18,14 +18,20 @@ export default function Bonds() {
             const h = history[f.id] ?? []
             const mine = h.map((e) => e.date)
             const run = f.theirDates ? sharedStreak(mine, f.theirDates, today) : streak(h, today)
+            const readToday = mine.includes(today)
+            const safe = f.theirDates ? readToday && f.theirDates.includes(today) : readToday
             const theirsToday = f.theirDates?.includes(today)
-            return (
+                        return (
               <li key={f.id}>
-                <Link to={`/bonds/${f.id}`} className="bond-item">
+                <Link to={readToday ? `/bonds/${f.id}` : `/twin/${f.id}`} className="bond-item">
                   <strong>{f.name}</strong>
                   <span className="muted bond-meta">
                     {h[0] ? `Last ${h[0].date}` : 'No readings yet'}
-                    {run > 0 && <span className="streak" title={`${run}-day streak`}> · 🔥 {run}</span>}
+                    {run > 0 && (
+                      <span className="streak" title={safe ? `${run}-day streak` : `${run}-day streak: read today to keep it`}>
+                        {' · '}<span className={safe ? undefined : 'flame-fading'}>🔥</span> {run}
+                      </span>
+                    )}
                     {f.syncedAt === undefined ? ' · waiting to sync' : theirsToday ? ' · read today' : ' · not yet today'}
                   </span>
                 </Link>

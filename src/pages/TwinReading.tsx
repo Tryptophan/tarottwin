@@ -5,6 +5,7 @@ import { CardInspect } from '../components/CardInspect'
 import Countdown from '../components/Countdown'
 import DignityChips from '../components/DignityChips'
 import { update, useAppState, withReading, withUnlocked } from '../lib/storage'
+import { streakBefore, twinProse } from '../lib/prose'
 import { pairReading } from '../lib/reading'
 import { utcDate } from '../lib/dates'
 import { isValidId } from '../lib/twinLink'
@@ -23,9 +24,23 @@ export default function TwinReading() {
   return <Reading key={id} friendId={id} friendName={friendName} myId={userId} myName={name} />
 }
 
+const STEPS_KEY = 'tarottwin:twinsteps'
+const stepsId = (myId: string, friendId: string, date: string) => `${myId}|${friendId}|${date}`
+
+function loadStep(id: string): number {
+  try {
+    const [k, n] = (localStorage.getItem(STEPS_KEY) ?? '').split('=')
+    return k === id ? Math.min(3, Math.max(0, Number(n) || 0)) : 0
+  } catch { return 0 }
+}
+
 function Reading({ friendId, friendName, myId, myName }: { friendId: string; friendName: string; myId: string; myName: string }) {
+  const { history, friends } = useAppState()
   const [date, setDate] = useState(() => utcDate())
-  const [step, setStep] = useState(0)
+  const [step, setStep] = useState(() => {
+    const done = (history[friendId] ?? []).some((e) => e.date === utcDate())
+    return done ? 3 : loadStep(stepsId(myId, friendId, utcDate()))
+  })
   const [sheet, setSheet] = useState<Card | null>(null)
   const r = useMemo(() => pairReading(myId, friendId, date), [myId, friendId, date])
 
@@ -40,6 +55,13 @@ function Reading({ friendId, friendName, myId, myName }: { friendId: string; fri
     const ids = [r.mine.id, r.theirs.id, r.bridge.id].slice(0, step)
     if (ids.length) update((s) => withUnlocked(s, ...ids))
   }, [step, r])
+
+  useEffect(() => {
+    try { localStorage.setItem(STEPS_KEY, `${stepsId(myId, friendId, date)}=${step}`) } catch { /* ignore */ }
+  }, [step, myId, friendId, date])
+
+  const run = streakBefore((history[friendId] ?? []).map((e) => e.date), date, friends[friendId]?.theirDates)
+  const text = useMemo(() => twinProse(r, date, run), [r, date, run])
 
   const onZero = useCallback(() => { setDate(utcDate()); setStep(0) }, [])
   const reveal = (n: number) => () => setStep((s) => Math.max(s, n + 1))
@@ -59,6 +81,7 @@ function Reading({ friendId, friendName, myId, myName }: { friendId: string; fri
         ))}
       </div>
       {step < 3 && <p className="muted" style={{ textAlign: 'center' }}>Tap to reveal: {['you', friendName, 'the bridge'][step]}</p>}
+      {step === 3 && <p className="prose">{text}</p>}
       {step === 3 && (
         <DignityChips mine={r.mine} theirs={r.theirs} bridge={r.bridge} youFriend={r.youFriend}
           youBridge={r.youBridge} friendBridge={r.friendBridge} tone={r.tone}

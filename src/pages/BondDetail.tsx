@@ -4,6 +4,7 @@ import { TarotCard } from '../components/TarotCard'
 import { CardInspect } from '../components/CardInspect'
 import DignityChips from '../components/DignityChips'
 import { update, useAppState, withoutFriend } from '../lib/storage'
+import { streakBefore, twinProse } from '../lib/prose'
 import { CARD_BY_ID, type Card } from '../data/cards'
 import { overallTone, relation } from '../lib/dignity'
 
@@ -34,6 +35,11 @@ export default function BondDetail() {
                 <TarotCard key={i} card={c} revealed size="sm" onInspect={() => setSheet(c)} />
               ))}
             </div>
+            <p className="prose">{twinProse(
+              { mine, theirs, bridge, youFriend: yf, tone: overallTone(yf, yb, fb) },
+              e.date,
+              streakBefore(entries.map((x) => x.date), e.date, friend.theirDates),
+            )}</p>
             <DignityChips mine={mine} theirs={theirs} bridge={bridge} youFriend={yf} youBridge={yb}
               friendBridge={fb} tone={overallTone(yf, yb, fb)} myName={name || 'You'} friendName={friend.name} />
           </section>

@@ -214,7 +214,7 @@ export function update(fn: (s: AppState) => AppState) {
 }
 
 export function resetAll() {
-  try { sessionStorage.removeItem('tarottwin:revealed') } catch { /* ignore */ }
+  try { localStorage.removeItem('tarottwin:revealed'); localStorage.removeItem('tarottwin:twinsteps') } catch { /* ignore */ }
   current = fresh()
   persist(current)
   listeners.forEach((l) => l())

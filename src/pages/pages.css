@@ -52,6 +52,7 @@
 .twin .tabs { margin-bottom: 16px; }
 
 .bond-item .streak { color: var(--gold-soft); white-space: nowrap; }
+.flame-fading { filter: grayscale(1) brightness(1.6) contrast(0.6); opacity: 0.55; }
 .bond-item strong { max-width: 100%; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .bond-item .bond-meta { max-width: 100%; font-size: .9rem; }
 
@@ -83,3 +84,4 @@
 .offline-pill .tcard-spinner { width: 16px; height: 16px; border-width: 2px; }
 .filter-sep { flex: none; width: 1px; align-self: stretch; margin: 4px 2px; background: var(--border); }
 .collection-empty { text-align: center; margin: 28px 8px; }
+.prose { font-style: italic; text-align: center; line-height: 1.5; margin: 1rem auto; max-width: 34ch; color: var(--gold-soft); }
