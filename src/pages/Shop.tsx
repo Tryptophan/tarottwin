@@ -12,7 +12,7 @@ export default function Shop() {
     <main className="page shop">
       <h1>Shop</h1>
       <section className="shop-hero">
-        <img src={assetUrl('foil/back/art.webp')} alt="" width="110" draggable={false} />
+        <img src={assetUrl('shop/deck.webp')} alt="The Rider Tarot Deck box" width="110" height="166" draggable={false} />
         <div>
           <h2>{FEATURED.title}</h2>
           <p className="muted">{FEATURED.blurb}</p>
