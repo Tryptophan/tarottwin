@@ -569,7 +569,8 @@ vec4 shade_face(Geo g, vec4 tex, float art_a, Card c, Taps tp) {
 	vec3 nm = normal_at(uv_e, pixel, g.back);
 	// tangent space (+Y up, +Z out) to card space (y down, out of the card = -z)
 	vec3 n = nrm(vec3(nm.x * 2.0 - 1.0, -(nm.y * 2.0 - 1.0), -(nm.z * 2.0 - 1.0)));
-	vec2 tl = vec2(facing_yaw(u_tilt.x), u_tilt.y);
+	// the back is shaded in the mirrored space (a half turn about y), where pitch runs the other way
+	vec2 tl = vec2(facing_yaw(u_tilt.x), g.back ? -u_tilt.y : u_tilt.y);
 	float view = tl.x * 1.6 - tl.y * 1.1;
 
 	// a point light hovering over the card, moving against the tilt (it is also the glare)
