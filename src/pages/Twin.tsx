@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import QrCode from '../components/QrCode'
 import Scanner from '../components/Scanner'
@@ -6,13 +6,22 @@ import { useAppState } from '../lib/storage'
 import { buildInviteLink, parseInviteLink } from '../lib/twinLink'
 
 export default function Twin() {
-  const { userId, name, inviteSecret } = useAppState()
+  const { userId, name, inviteSecret, friends } = useAppState()
   const nav = useNavigate()
   const [tab, setTab] = useState<'qr' | 'scan'>('qr')
   const [paste, setPaste] = useState('')
   const [err, setErr] = useState('')
   const [copied, setCopied] = useState(false)
   const link = buildInviteLink(userId, name, inviteSecret)
+  // QR only: a friend who scans it while it is on screen opens the Twin reading here too.
+  // Once the link has been shared or copied, a new bond can't be told apart from a QR scan, so don't auto-open.
+  const knownAtMount = useRef(new Set(Object.keys(friends)))
+  const linkShared = useRef(false)
+  useEffect(() => {
+    if (tab !== 'qr' || linkShared.current) return
+    const joined = Object.keys(friends).find((id) => !knownAtMount.current.has(id))
+    if (joined) nav(`/twin/${joined}`)
+  }, [friends, tab, nav])
 
   const open = (text: string) => {
     const p = parseInviteLink(text)
@@ -23,10 +32,12 @@ export default function Twin() {
     nav(`/join/${p.secret}?i=${p.id}&n=${encodeURIComponent(p.name)}`)
   }
   const share = () => {
+    linkShared.current = true
     if (navigator.share) void navigator.share({ title: 'Tarot Twin', text: `${name} invited you to be Twins`, url: link }).catch(() => {})
     else void copy()
   }
   const copy = async () => {
+    linkShared.current = true
     await navigator.clipboard?.writeText(link)
     setCopied(true)
     setTimeout(() => setCopied(false), 1500)
