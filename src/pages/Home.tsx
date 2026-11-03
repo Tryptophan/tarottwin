@@ -39,7 +39,7 @@ export default function Home() {
           onInspect={() => setSheet(card)}
         />
       </div>
-      {!isRevealed && <p className="muted">Tap the card to reveal</p>}
+      {!isRevealed && <p className="muted" style={{ textAlign: 'center' }}>Tap the card to reveal</p>}
       <Countdown onZero={onZero} hidden={!isRevealed} />
       <CardInspect card={sheet} onClose={() => setSheet(null)} />
     </main>

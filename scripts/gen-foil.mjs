@@ -81,7 +81,7 @@ if (todo.length) run(BIN, [...todo.map((id) => path.join(dirs.cards, `${id}.json
 
 // 5: the back (flat: no depth), drawn at the cropped width and padded to the CLI's card size
 run('rsvg-convert', [path.join(root, 'scripts/foil-back.svg'), '-w', String(CROP_W), '-h', String(CARD_H), '-o', path.join(dirs.back, 'back_src.png')]);
-run('convert', [path.join(dirs.back, 'back_src.png'), '-background', '#170a24', '-gravity', 'center', '-extent', `${CARD_W}x${CARD_H}`, path.join(dirs.back, 'back.png')]);
+run('convert', [path.join(dirs.back, 'back_src.png'), '-background', '#0d0517', '-gravity', 'center', '-extent', `${CARD_W}x${CARD_H}`, path.join(dirs.back, 'back.png')]);
 run(BIN, [path.join(dirs.back, 'back.png'), '-o', dirs.back, '--no-depth'], { stdio: 'inherit' });
 const enc = (src, dst, cropW, w, h, kind, filter = 'lanczos', channel = null) =>
   py('foil-webp.py', [src, dst, '--crop', String(cropW), '--width', String(w), '--height', String(h),

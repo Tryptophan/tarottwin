@@ -63,7 +63,7 @@ function Reading({ friendId, friendName, myId, myName }: { friendId: string; fri
           </div>
         ))}
       </div>
-      {step < 3 && <p className="muted">Tap to reveal: {['you', friendName, 'the bridge'][step]}</p>}
+      {step < 3 && <p className="muted" style={{ textAlign: 'center' }}>Tap to reveal: {['you', friendName, 'the bridge'][step]}</p>}
       {step === 3 && (
         <DignityChips mine={r.mine} theirs={r.theirs} bridge={r.bridge} youFriend={r.youFriend}
           youBridge={r.youBridge} friendBridge={r.friendBridge} tone={r.tone}
