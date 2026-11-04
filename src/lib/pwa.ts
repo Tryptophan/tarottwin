@@ -53,6 +53,8 @@ export function initPwa() {
     e.preventDefault()
     deferred = e as InstallPrompt
     emit()
+    // installable: start saving the cards now, so they are usually all there by the time it is installed
+    void downloadForOffline()
   })
   window.addEventListener('appinstalled', () => {
     deferred = null

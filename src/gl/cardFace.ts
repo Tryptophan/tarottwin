@@ -1,5 +1,6 @@
 import type { Card } from '../data/cards'
 import { bitmap } from '../lib/foil'
+import { sigilSvg } from '../lib/sigil'
 import { DECK } from '../data/cards'
 import { uniformLineSize, uniformSize, wrapLines } from './cardText'
 import { faceKey, printTag, type Print } from '../lib/print'
@@ -240,7 +241,7 @@ function drawFrameFoil(l: Layout): HTMLCanvasElement {
   return c
 }
 
-function drawArt(l: Layout, art: ImageBitmap): HTMLCanvasElement {
+function drawArt(l: Layout, art: CanvasImageSource): HTMLCanvasElement {
   const c = canvas(l.w, l.h)
   const ctx = c.getContext('2d')!
   silhouette(ctx, l)
@@ -253,14 +254,14 @@ function drawArt(l: Layout, art: ImageBitmap): HTMLCanvasElement {
 }
 
 /** fx: R = foil inside the art window, B = 255 inside the window (art window), G = A = 0. */
-function buildFx(l: Layout, foil: ImageBitmap): RawPixels {
+function buildFx(l: Layout, foil: CanvasImageSource | null): RawPixels {
   const w = l.art.w
   const h = l.art.h
   const tmp = canvas(w, h)
   const tc = tmp.getContext('2d', { willReadFrequently: true })!
   tc.fillStyle = '#000'
   tc.fillRect(0, 0, w, h)
-  tc.drawImage(foil, 0, 0, w, h)
+  if (foil) tc.drawImage(foil, 0, 0, w, h)
   const src = tc.getImageData(0, 0, w, h).data
   const data = new Uint8Array(l.w * l.h * 4)
   for (let y = 0; y < h; y++) {
@@ -283,6 +284,14 @@ function flatNormal(): RawPixels {
 export interface FaceLayers { layout: Layout; art: HTMLCanvasElement; frame: HTMLCanvasElement }
 interface Entry { layers: Promise<FaceLayers>; fx?: Promise<RawPixels>; ready?: CardTextures }
 
+/** The logo-in-a-starfield picture, drawn in code: stands in for the art when its file can't be loaded (offline, not saved yet). */
+async function sigilArt(card: Card): Promise<CanvasImageSource> {
+  const img = new Image()
+  img.src = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(sigilSvg(card))}`
+  await img.decode()
+  return img
+}
+
 const LRU_MAX = 6
 const faces = new Map<string, Entry>()
 
@@ -297,7 +306,7 @@ function entry(m: FoilManifest, card: Card, print?: Print): Entry {
   const c = m.cards[card.id]
   if (!c) throw new Error(`no foil entry for ${card.id}`)
   const layout = layoutFor(m.aspect, m.artAspect || 0.6)
-  const layers = Promise.all([bitmap(c.art, true), ensureFonts()]).then(async ([art]) => {
+  const layers = Promise.all([bitmap(c.art, true).catch(() => sigilArt(card)), ensureFonts()]).then(async ([art]) => {
     const artCanvas = drawArt(layout, art)
     await yieldToMain()
     return { layout, art: artCanvas, frame: drawFrame(layout, card, print) }
@@ -349,7 +358,7 @@ export async function loadCardTextures(m: FoilManifest, card: Card, print?: Prin
   const e = entry(m, card, print)
   if (e.ready) return e.ready
   const layers = await e.layers
-  e.fx ??= bitmap(m.cards[card.id].foil, false).then(async (f) => { await yieldToMain(); return buildFx(layers.layout, f) })
+  e.fx ??= bitmap(m.cards[card.id].foil, false).catch(() => null).then(async (f) => { await yieldToMain(); return buildFx(layers.layout, f) })
   const [fx, bart, bfx] = await Promise.all([e.fx, roundedBack(m.back.art), bitmap(m.back.fx, false)])
   await yieldToMain()
   e.ready = {
