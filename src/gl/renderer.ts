@@ -49,7 +49,7 @@ export class FoilRenderer {
   constructor() {
     const canvas = document.createElement('canvas')
     this.canvas = canvas
-    const gl = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: false })
+    const gl = canvas.getContext('webgl2', { alpha: true, premultipliedAlpha: true, antialias: false, preserveDrawingBuffer: true })
     if (!gl) throw new Error('WebGL2 is not available')
     this.gl = gl
     this.prog = link(gl, vertSrc, fragSrc)
@@ -181,7 +181,8 @@ export class FoilRenderer {
     gl.uniform2f(this.u('u_back_native_size'), 0, 0)
     this.i('u_back_hue_steps', 0)
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4)
-    // same task as the draw, so the drawing buffer is still intact
+    // the buffer is preserved (see the context options) and flushed, so no browser can hand this card the previous card's frame
+    gl.flush()
     const ctx = target.getContext('2d')
     if (ctx) {
       ctx.clearRect(0, 0, w, h)
