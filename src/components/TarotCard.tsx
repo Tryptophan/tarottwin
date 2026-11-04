@@ -6,6 +6,7 @@ import { loadCardTextures, loadSmallFace, peekTextures } from '../gl/cardFace'
 import { finishFor, loadManifest, lowPower } from '../lib/foil'
 import { faceKey, type Print } from '../lib/print'
 import { Sparkles } from './Sparkles'
+import { t } from '../i18n'
 import { TarotCardFallback } from './TarotCardFallback'
 
 type Size = 'sm' | 'md' | 'lg' | 'xl'
@@ -342,7 +343,7 @@ function TarotCardGL(props: Props) {
   }, [])
 
   const showGl = active && !failed && textures
-  const aria = revealed ? `${card.name}. Tap for details` : `Face-down card${label ? ` for ${label}` : ''}. Tap to reveal`
+  const aria = revealed ? t.card.inspectAria(card.name) : t.card.faceDownAria(label)
 
   return (
     <span className="tcard-host" ref={hostRef}>

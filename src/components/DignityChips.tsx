@@ -1,8 +1,9 @@
 import type { Card } from '../data/cards'
 import { RELATION_LABEL, type Relation, type Tone } from '../lib/dignity'
+import { t } from '../i18n'
 import { ElementIcon } from './ElementIcon'
 
-const TONE_LABEL: Record<Tone, string> = { harmonious: 'Harmonious', challenging: 'Challenging', balanced: 'Balanced' }
+const TONE_LABEL: Record<Tone, string> = t.dignity.tone
 
 function Chip({ a, b, rel, big }: { a: Card; b: Card; rel: Relation; big?: boolean }) {
   return (
@@ -33,10 +34,10 @@ export default function DignityChips(p: DignityChipsProps) {
       </div>
       <div className="dignity-sub">
         <span className="dignity-pair">
-          {p.myName ?? 'You'} · Bridge <Chip a={p.mine} b={p.bridge} rel={p.youBridge} />
+          {t.dignity.withBridge(p.myName ?? t.common.you)} <Chip a={p.mine} b={p.bridge} rel={p.youBridge} />
         </span>
         <span className="dignity-pair">
-          {p.friendName ?? 'Friend'} · Bridge <Chip a={p.theirs} b={p.bridge} rel={p.friendBridge} />
+          {t.dignity.withBridge(p.friendName ?? t.common.friend)} <Chip a={p.theirs} b={p.bridge} rel={p.friendBridge} />
         </span>
       </div>
     </div>

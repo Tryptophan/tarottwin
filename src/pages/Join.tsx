@@ -3,6 +3,7 @@ import { Link, Navigate, useNavigate, useParams, useSearchParams } from 'react-r
 import { randomHex } from '../lib/crypto'
 import { update, useAppState, withFriend } from '../lib/storage'
 import { parseInviteLink } from '../lib/twinLink'
+import { t } from '../i18n'
 
 /**
  * Opening an invite link: you make a private bond secret for the two of you and are bonded right away.
@@ -23,8 +24,8 @@ export default function Join() {
     nav(`/twin/${invite.id}`, { replace: true })
   }, [invite, own, known, nav])
 
-  if (!invite) return <main className="page"><h1>Invalid link</h1><p className="muted">This invite link is not valid.</p><Link className="btn btn-ghost" to="/twin">Back</Link></main>
-  if (own) return <main className="page"><h1>That's you</h1><p className="muted">This is your own invite. Send it to a friend instead.</p><Link className="btn btn-ghost" to="/twin">Back</Link></main>
+  if (!invite) return <main className="page"><h1>{t.reading.invalidTitle}</h1><p className="muted">{t.reading.invalidInvite}</p><Link className="btn btn-ghost" to="/twin">{t.common.back}</Link></main>
+  if (own) return <main className="page"><h1>{t.reading.selfTitle}</h1><p className="muted">{t.reading.selfInvite}</p><Link className="btn btn-ghost" to="/twin">{t.common.back}</Link></main>
   if (known) return <Navigate to={`/twin/${invite.id}`} replace />
-  return <main className="page"><p className="muted">Joining…</p></main>
+  return <main className="page"><p className="muted">{t.reading.joining}</p></main>
 }

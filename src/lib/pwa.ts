@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from 'react'
 import { registerSW } from 'virtual:pwa-register'
 import { downloadForOffline } from './offline'
+import { t } from '../i18n'
 
 /**
  * The installable app: the browser's install prompt (caught early, offered from our own button) and
@@ -99,8 +100,4 @@ export const useInstallWay = () => useSyncExternalStore(subscribe, way)
 export const useUpdateReady = () => useSyncExternalStore(subscribe, () => updateReady)
 
 /** What to do by hand where there's no install prompt. */
-export const INSTALL_STEPS: Record<Exclude<InstallWay, 'prompt' | 'none'>, string> = {
-  ios: 'Tap the Share button in Safari’s toolbar, then “Add to Home Screen”.',
-  android: 'Open Firefox’s menu (⋮), then tap “Add app to Home screen” or “Install”.',
-  mac: 'In Safari’s menu bar, choose File › Add to Dock.',
-}
+export const INSTALL_STEPS: Record<Exclude<InstallWay, 'prompt' | 'none'>, string> = t.install

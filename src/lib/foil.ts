@@ -2,7 +2,13 @@ import type { Card } from '../data/cards'
 import type { FoilManifest } from '../gl/types'
 import { RARITY_FINISH, type Print } from './print'
 
-const BASE = import.meta.env.BASE_URL
+import { siteRoot } from '../i18n'
+
+/**
+ * Where the shared files (card art, foil maps, icons) live. The build's base is relative ('./'), and the language
+ * pages sit one folder down (`/pt/`), so it resolves against the site root rather than the page.
+ */
+const BASE = import.meta.env.BASE_URL === './' && typeof location !== 'undefined' ? siteRoot(location.pathname) : import.meta.env.BASE_URL
 export const assetUrl = (p: string) => `${BASE}${p}`
 
 let manifestPromise: Promise<FoilManifest | null> | null = null

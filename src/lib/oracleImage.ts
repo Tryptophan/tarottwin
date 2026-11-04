@@ -3,18 +3,13 @@ import { loadFaceLayers } from '../gl/cardFace'
 import { loadManifest } from './foil'
 import { POSITIONS, VERDICT_LABEL, oracleSeed, type OracleEntry } from './oracle'
 import { printFor } from './print'
+import { t } from '../i18n'
+import { wrapLines } from '../gl/cardText'
 
 const W = 1080, H = 1350, CW = 300, GAP = 45
 
 function wrap(ctx: CanvasRenderingContext2D, text: string, max: number): string[] {
-  const lines: string[] = []
-  let line = ''
-  for (const word of text.split(' ')) {
-    const next = line ? `${line} ${word}` : word
-    if (line && ctx.measureText(next).width > max) { lines.push(line); line = word } else line = next
-  }
-  if (line) lines.push(line)
-  return lines.slice(0, 4)
+  return wrapLines(text, 0, max, (s) => ctx.measureText(s).width).slice(0, 4)
 }
 
 const timestamp = (ms: number) => `${new Date(ms).toISOString().slice(0, 16).replace('T', ' ')} UTC`
@@ -36,7 +31,7 @@ export async function oracleImage(userId: string, e: OracleEntry): Promise<Blob>
   ctx.fillStyle = '#b19dc2'
   ctx.font = font(34)
   ctx.letterSpacing = '8px'
-  ctx.fillText('TAROT TWIN · ORACLE', W / 2, 100)
+  ctx.fillText(t.oracle.imageHeader, W / 2, 100)
   ctx.letterSpacing = '0px'
 
   ctx.fillStyle = '#eadef4'
@@ -77,7 +72,7 @@ export async function oracleImage(userId: string, e: OracleEntry): Promise<Blob>
     ctx.restore()
     ctx.fillStyle = '#b19dc2'
     ctx.font = font(30)
-    ctx.fillText(`${POSITIONS[i]}${pc.reversed ? ' · reversed' : ''}`, x + CW / 2, top + ch + 55)
+    ctx.fillText(`${POSITIONS[i]}${pc.reversed ? ` · ${t.oracle.reversed}` : ''}`, x + CW / 2, top + ch + 55)
   }
 
   ctx.fillStyle = '#c6d65f'
@@ -102,7 +97,7 @@ export function canShareImages(): boolean {
 export async function shareOracle(userId: string, e: OracleEntry): Promise<void> {
   const blob = await oracleImage(userId, e)
   const file = new File([blob], 'tarot-twin-oracle.png', { type: 'image/png' })
-  try { await navigator.share({ files: [file], title: 'Tarot Twin Oracle' }) } catch (err) {
+  try { await navigator.share({ files: [file], title: t.oracle.shareTitle }) } catch (err) {
     if ((err as Error).name !== 'AbortError') throw err
   }
 }

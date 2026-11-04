@@ -8,6 +8,7 @@ import { streakBefore, twinProse } from '../lib/prose'
 import { CARD_BY_ID, type Card } from '../data/cards'
 import { overallTone, relation } from '../lib/dignity'
 import { bridgeSeed, dailySeed, printFor, type Print } from '../lib/print'
+import { t } from '../i18n'
 
 export default function BondDetail() {
   const { id = '' } = useParams()
@@ -15,13 +16,13 @@ export default function BondDetail() {
   const nav = useNavigate()
   const [sheet, setSheet] = useState<{ card: Card; print: Print } | null>(null)
   const friend = friends[id]
-  if (!friend) return <main className="page"><h1>Not found</h1><Link className="btn btn-ghost" to="/bonds">Back</Link></main>
+  if (!friend) return <main className="page"><h1>{t.bond.notFound}</h1><Link className="btn btn-ghost" to="/bonds">{t.common.back}</Link></main>
   const entries = history[id] ?? []
   return (
     <main className="page bond-detail">
-      <p><Link to="/bonds">&larr; Bonds</Link></p>
+      <p><Link to="/bonds">&larr; {t.nav.bonds}</Link></p>
       <h1>{friend.name}</h1>
-      {entries.length === 0 && <p className="muted">No readings yet.</p>}
+      {entries.length === 0 && <p className="muted">{t.bond.noReadings}</p>}
       {entries.map((e) => {
         const mine = CARD_BY_ID.get(e.mine), theirs = CARD_BY_ID.get(e.theirs), bridge = CARD_BY_ID.get(e.bridge)
         if (!mine || !theirs || !bridge) return null
@@ -47,16 +48,16 @@ export default function BondDetail() {
               streakBefore(entries.map((x) => x.date), e.date, friend.theirDates),
             )}</p>
             <DignityChips mine={mine} theirs={theirs} bridge={bridge} youFriend={yf} youBridge={yb}
-              friendBridge={fb} tone={overallTone(yf, yb, fb)} myName={name || 'You'} friendName={friend.name} />
+              friendBridge={fb} tone={overallTone(yf, yb, fb)} myName={name || t.common.you} friendName={friend.name} />
           </section>
         )
       })}
       <button className="btn btn-ghost" onClick={() => {
-        if (confirm(`Delete ${friend.name} and all twin readings?`)) {
+        if (confirm(t.bond.confirmDelete(friend.name))) {
           update((s) => withoutFriend(s, id))
           nav('/bonds')
         }
-      }}>Delete friend</button>
+      }}>{t.bond.delete}</button>
       <CardInspect card={sheet?.card ?? null} print={sheet?.print} onClose={() => setSheet(null)} />
     </main>
   )

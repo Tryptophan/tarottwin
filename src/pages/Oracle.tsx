@@ -9,6 +9,7 @@ import {
 import { canShareImages, shareOracle } from '../lib/oracleImage'
 import { printFor, type Print } from '../lib/print'
 import { update, useAppState, withOracle, withPrints, withUnlocked } from '../lib/storage'
+import { t } from '../i18n'
 
 export default function Oracle() {
   const { userId, oracle } = useAppState()
@@ -54,14 +55,14 @@ export default function Oracle() {
 
   return (
     <main className="page oracle">
-      <h1>Oracle</h1>
+      <h1>{t.oracle.title}</h1>
       {!current && (
         <form className="oracle-ask" onSubmit={(e) => { e.preventDefault(); ask() }}>
-          <p className="muted">Hold a yes or no question in mind, and type it. Three cards will answer.</p>
+          <p className="muted">{t.oracle.intro}</p>
           <textarea className="textarea" rows={3} maxLength={MAX_QUESTION} value={question}
-            placeholder="Should I…?" aria-label="Your question" onChange={(e) => setQuestion(e.target.value)} />
+            placeholder={t.oracle.placeholder} aria-label={t.oracle.questionAria} onChange={(e) => setQuestion(e.target.value)} />
           <p className="muted oracle-count">{q.length}/{MAX_QUESTION}</p>
-          <button className="btn btn-gold btn-block" type="submit" disabled={!q}>Ask the cards</button>
+          <button className="btn btn-gold btn-block" type="submit" disabled={!q}>{t.oracle.ask}</button>
         </form>
       )}
       {current && reading && (
@@ -75,24 +76,24 @@ export default function Oracle() {
                     onReveal={i === step ? () => setStep((s) => Math.max(s, i + 1)) : undefined}
                     onInspect={() => setSheet(i)} />
                 </div>
-                <span className="tcard-label">{POSITIONS[i]}{d.reversed && step > i ? ' · reversed' : ''}</span>
+                <span className="tcard-label">{POSITIONS[i]}{d.reversed && step > i ? ` · ${t.oracle.reversed}` : ''}</span>
               </div>
             ))}
           </div>
-          {step < 3 && <p className="muted" style={{ textAlign: 'center' }}>Tap to reveal: {POSITIONS[step].toLowerCase()}</p>}
+          {step < 3 && <p className="muted" style={{ textAlign: 'center' }}>{t.oracle.tapToReveal(t.oracle.revealPositions[step])}</p>}
           {step >= 3 && (
             <>
               <p className="prose">{text}</p>
               <p className={`oracle-verdict oracle-${reading.verdict}`}>{VERDICT_LABEL[reading.verdict]}</p>
-              {canShareImages() && <button className="btn btn-ghost btn-block" disabled={sharing} onClick={() => void share(current)}>Share as image</button>}
+              {canShareImages() && <button className="btn btn-ghost btn-block" disabled={sharing} onClick={() => void share(current)}>{t.oracle.shareImage}</button>}
             </>
           )}
-          <p className="countdown">Ask again in <time>{formatCountdown(msUntilNextWindow(now))}</time></p>
+          <p className="countdown">{t.oracle.askAgainIn} <time>{formatCountdown(msUntilNextWindow(now))}</time></p>
         </>
       )}
       {oracle.length > 0 && (
         <section className="oracle-journal">
-          <h2>Journal</h2>
+          <h2>{t.oracle.journal}</h2>
           <ul className="bond-list">
             {oracle.map((e) => (
               <li key={e.at} className="oracle-entry">
@@ -101,9 +102,9 @@ export default function Oracle() {
                   <div className="muted">
                     {VERDICT_LABEL[e.verdict]} · {new Date(e.at).toISOString().slice(0, 10)} {String(new Date(e.at).getUTCHours()).padStart(2, '0')}:00 UTC
                   </div>
-                  <div className="muted">{e.cards.map((c) => `${CARD_BY_ID.get(c.id)?.name ?? c.id}${c.reversed ? ' (r)' : ''}`).join(' · ')}</div>
+                  <div className="muted">{e.cards.map((c) => `${CARD_BY_ID.get(c.id)?.name ?? c.id}${c.reversed ? ` ${t.oracle.reversedShort}` : ''}`).join(' · ')}</div>
                 </div>
-                {canShareImages() && <button className="btn btn-ghost btn-sm" disabled={sharing} onClick={() => void share(e)}>Share</button>}
+                {canShareImages() && <button className="btn btn-ghost btn-sm" disabled={sharing} onClick={() => void share(e)}>{t.oracle.share}</button>}
               </li>
             ))}
           </ul>

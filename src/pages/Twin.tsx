@@ -4,6 +4,7 @@ import QrCode from '../components/QrCode'
 import Scanner from '../components/Scanner'
 import { useAppState } from '../lib/storage'
 import { buildInviteLink, parseInviteLink } from '../lib/twinLink'
+import { t } from '../i18n'
 
 export default function Twin() {
   const { userId, name, inviteSecret, friends } = useAppState()
@@ -26,14 +27,14 @@ export default function Twin() {
   const open = (text: string) => {
     const p = parseInviteLink(text)
     if (!p) {
-      setErr('That does not look like a Tarot Twin invite.')
+      setErr(t.twin.notAnInvite)
       return
     }
     nav(`/join/${p.secret}?i=${p.id}&n=${encodeURIComponent(p.name)}`)
   }
   const share = () => {
     linkShared.current = true
-    if (navigator.share) void navigator.share({ title: 'Tarot Twin', text: `${name} invited you to be Twins`, url: link }).catch(() => {})
+    if (navigator.share) void navigator.share({ title: 'Tarot Twin', text: t.twin.shareText(name), url: link }).catch(() => {})
     else void copy()
   }
   const copy = async () => {
@@ -45,29 +46,29 @@ export default function Twin() {
 
   return (
     <main className="page twin">
-      <p><Link to="/bonds">&larr; Bonds</Link></p>
-      <h1>Twin</h1>
-      <p className="muted">A twin reading pairs your daily card with a friend's and adds a bridge card.</p>
+      <p><Link to="/bonds">&larr; {t.nav.bonds}</Link></p>
+      <h1>{t.twin.title}</h1>
+      <p className="muted">{t.twin.intro}</p>
       <div className="tabs" role="tablist">
-        <button role="tab" aria-selected={tab === 'qr'} className={`tab${tab === 'qr' ? ' tab-active' : ''}`} onClick={() => setTab('qr')}>Invite</button>
-        <button role="tab" aria-selected={tab === 'scan'} className={`tab${tab === 'scan' ? ' tab-active' : ''}`} onClick={() => setTab('scan')}>Scan</button>
+        <button role="tab" aria-selected={tab === 'qr'} className={`tab${tab === 'qr' ? ' tab-active' : ''}`} onClick={() => setTab('qr')}>{t.twin.tabInvite}</button>
+        <button role="tab" aria-selected={tab === 'scan'} className={`tab${tab === 'scan' ? ' tab-active' : ''}`} onClick={() => setTab('scan')}>{t.twin.tabScan}</button>
       </div>
       {tab === 'qr' ? (
         <section className="twin-qr">
           <QrCode text={link} />
-          <p className="muted">Have your friend scan this or open the link.</p>
+          <p className="muted">{t.twin.qrHint}</p>
           <div className="invite-actions">
-            <button className="btn btn-gold" onClick={share}>Share link</button>
-            <button className="btn btn-ghost" onClick={() => void copy()}>{copied ? 'Copied' : 'Copy link'}</button>
+            <button className="btn btn-gold" onClick={share}>{t.twin.shareLink}</button>
+            <button className="btn btn-ghost" onClick={() => void copy()}>{copied ? t.common.copied : t.twin.copyLink}</button>
           </div>
         </section>
       ) : (
         <section className="twin-scan">
           <Scanner onResult={open} />
           <form className="row" onSubmit={(e) => { e.preventDefault(); open(paste) }}>
-            <input className="input" value={paste} placeholder="Or paste a link" aria-label="Paste link"
+            <input className="input" value={paste} placeholder={t.twin.pastePlaceholder} aria-label={t.twin.pasteAria}
               onChange={(e) => { setPaste(e.target.value); setErr('') }} />
-            <button className="btn btn-gold" type="submit" disabled={!paste.trim()}>Go</button>
+            <button className="btn btn-gold" type="submit" disabled={!paste.trim()}>{t.twin.go}</button>
           </form>
           {err && <p className="scan-error" role="alert">{err}</p>}
         </section>

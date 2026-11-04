@@ -1,6 +1,6 @@
 import { DECK, type Card } from '../data/cards'
 import { leanOf } from '../data/oracle'
-import { keywords } from './prose'
+import { L, t } from '../i18n'
 import { seededRng } from './rng'
 
 /** One yes/no reading every 6 hours, in fixed UTC windows (00, 06, 12, 18). */
@@ -8,7 +8,7 @@ export const WINDOW_MS = 6 * 3600_000
 export const MAX_QUESTION = 140
 
 export type Verdict = 'yes' | 'no' | 'maybe'
-export const POSITIONS = ['Past', 'Present', 'Future'] as const
+export const POSITIONS: readonly string[] = t.oracle.positions
 /** The future decides the most. */
 const WEIGHTS = [1, 1.5, 2.5] as const
 
@@ -66,26 +66,12 @@ export function toEntry(question: string, r: OracleReading, askedAt: number = Da
   return { at: r.at, askedAt, question: cleanQuestion(question), cards: r.cards.map((d) => ({ id: d.card.id, reversed: d.reversed })), verdict: r.verdict }
 }
 
-export const VERDICT_LABEL: Record<Verdict, string> = { yes: 'Likely yes', no: 'Likely no', maybe: 'Maybe' }
-
-const LEAD = ['Behind you,', 'Before you,', 'Ahead,']
-const TURN: Record<'up' | 'down', readonly string[]> = {
-  up: ['{n} lends {k}', '{n} offers {k}', '{n} carries {k}'],
-  down: ['{n}, turned over, clouds {k}', '{n} reversed holds {k} just out of reach', '{n}, upended, bends {k} inward'],
-}
-const CLOSE: Record<Verdict, readonly string[]> = {
-  yes: ['The omens lean toward yes.', 'The veil parts, and it opens toward yes.', 'The stars lean your way.'],
-  no: ['The omens lean toward no.', 'The veil stays drawn, and it closes toward no.', 'The stars turn their faces away.'],
-  maybe: ['The omens will not settle.', 'The veil trembles and the answer stays unwritten.', 'The stars hold their breath.'],
-}
+export const VERDICT_LABEL: Record<Verdict, string> = t.oracle.verdict
 
 /** Mystical text for a reading: one clause per card, then a closing line. Deterministic. */
 export function oracleProse(r: OracleReading, question: string): string {
-  const pick = <T,>(xs: readonly T[], rng: () => number) => xs[Math.floor(rng() * xs.length)]
   const rng = seededRng(`oracle-prose|${normalizeQuestion(question)}|${r.at}|${r.cards.map((d) => d.card.id).join(',')}`)
-  const parts = r.cards.map((d, i) => {
-    const t = pick(TURN[d.reversed ? 'down' : 'up'], rng).replace('{n}', d.card.name).replace('{k}', pick(keywords(d.card), rng))
-    return `${LEAD[i]} ${t}.`
-  })
-  return `${parts.join(' ')} ${pick(CLOSE[r.verdict], rng)}`
+  const pick = <T,>(xs: readonly T[]) => xs[Math.floor(rng() * xs.length)]
+  const cards = r.cards.map((d) => ({ card: { name: d.card.name, keywords: d.card.keywords, element: d.card.element }, reversed: d.reversed }))
+  return L.prose.oracle(cards, r.verdict, pick)
 }

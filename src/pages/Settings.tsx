@@ -5,6 +5,7 @@ import { buildDebugReport } from '../lib/debuglog'
 import { getState } from '../lib/storage'
 import { useRelayStatus } from '../net/runtime'
 import { resetAll, update, useAppState, withName } from '../lib/storage'
+import { LANG, LANGS, LOCALES, setLang, t, type Lang } from '../i18n'
 
 /** Install-as-app: a real button where the browser offers one, otherwise the steps for this browser. */
 function InstallApp() {
@@ -12,11 +13,11 @@ function InstallApp() {
   if (way === 'none') return null
   return (
     <div className="settings-block">
-      <label>Install</label>
+      <label>{t.common.install}</label>
       {way === 'prompt' ? (
         <div className="row">
-          <span className="muted">Add Tarot Twin to your home screen to open it like an app, even offline.</span>
-          <button className="btn btn-ghost" onClick={() => void promptInstall()}>Install</button>
+          <span className="muted">{t.settings.installBody}</span>
+          <button className="btn btn-ghost" onClick={() => void promptInstall()}>{t.common.install}</button>
         </div>
       ) : (
         <p className="muted">{INSTALL_STEPS[way]}</p>
@@ -53,43 +54,49 @@ export default function Settings() {
   const relays = useRelayStatus()
   return (
     <main className="page settings">
-      <h1>Settings</h1>
+      <h1>{t.settings.title}</h1>
+      <div className="settings-block">
+        <label htmlFor="lang">{t.settings.language}</label>
+        <select id="lang" className="input" value={LANG} onChange={(e) => setLang(e.target.value as Lang)}>
+          {LANGS.map((l) => <option key={l} value={l}>{LOCALES[l].native}</option>)}
+        </select>
+      </div>
       <form className="settings-block" onSubmit={(e) => { e.preventDefault(); if (draft.trim()) update((s) => withName(s, draft)) }}>
-        <label htmlFor="nm">Your name</label>
+        <label htmlFor="nm">{t.settings.yourName}</label>
         <div className="row">
           <input id="nm" className="input" value={draft} maxLength={40} onChange={(e) => setDraft(e.target.value)} />
-          <button className="btn btn-gold" type="submit" disabled={!draft.trim() || draft.trim() === name}>Save</button>
+          <button className="btn btn-gold" type="submit" disabled={!draft.trim() || draft.trim() === name}>{t.common.save}</button>
         </div>
       </form>
       <div className="settings-block">
-        <label>Your ID</label>
+        <label>{t.settings.yourId}</label>
         <div className="row">
           <FitId id={userId} />
           <button className="btn btn-ghost" onClick={() => { navigator.clipboard?.writeText(userId); setCopied(true); setTimeout(() => setCopied(false), 1500) }}>
-            {copied ? 'Copied' : 'Copy'}
+            {copied ? t.common.copied : t.common.copy}
           </button>
         </div>
       </div>
       <div className="settings-block">
-        <label>Offline</label>
+        <label>{t.settings.offline}</label>
         <div className="row">
           <span className="muted">
-            {offline.status === 'ready' ? 'All cards are saved on this device.'
-              : offline.status === 'running' ? `Saving cards… ${Math.round((offline.done / Math.max(1, offline.total)) * 100)}%`
-              : offline.status === 'error' ? 'Some cards could not be saved.'
-              : 'Save every card so the app works without a connection.'}
+            {offline.status === 'ready' ? t.settings.offlineReady
+              : offline.status === 'running' ? t.settings.offlineSaving(Math.round((offline.done / Math.max(1, offline.total)) * 100))
+              : offline.status === 'error' ? t.settings.offlineError
+              : t.settings.offlineIdle}
           </span>
           {offline.status !== 'ready' && offline.status !== 'running' && (
-            <button className="btn btn-ghost" onClick={() => void downloadForOffline()}>Save</button>
+            <button className="btn btn-ghost" onClick={() => void downloadForOffline()}>{t.common.save}</button>
           )}
         </div>
       </div>
       <InstallApp />
       <div className="settings-block">
-        <label>Sync</label>
-        <p className="muted">Names and Twin reading dates sync with friends through {relays.total} public relays, end-to-end encrypted. {relays.connected} connected.</p>
+        <label>{t.settings.sync}</label>
+        <p className="muted">{t.settings.syncBody(relays.total, relays.connected)}</p>
         <div className="row">
-          <span>Debug info</span>
+          <span>{t.settings.debugInfo}</span>
           <button className="btn btn-ghost" onClick={async () => {
             try {
               await navigator.clipboard.writeText(buildDebugReport({ state: getState(), relays }))
@@ -99,16 +106,16 @@ export default function Settings() {
             }
             setTimeout(() => setDebugCopied(null), 2000)
           }}>
-            {debugCopied === 'ok' ? 'Copied' : debugCopied === 'fail' ? 'Could not copy' : 'Copy'}
+            {debugCopied === 'ok' ? t.common.copied : debugCopied === 'fail' ? t.common.couldNotCopy : t.common.copy}
           </button>
         </div>
       </div>
       <div className="settings-block">
-        <label>Danger zone</label>
-        <p className="muted">Deleting all data removes your friends and history and creates a new ID. Friends will see you as a new person, and your daily cards will change. This cannot be undone.</p>
+        <label>{t.settings.danger}</label>
+        <p className="muted">{t.settings.dangerBody}</p>
         <button className="btn btn-ghost" onClick={() => {
-          if (confirm('Delete all data and reset your ID? This cannot be undone.')) { resetAll(); location.hash = '#/' }
-        }}>Delete all data / reset ID</button>
+          if (confirm(t.settings.confirmDeleteAll)) { resetAll(); location.hash = '#/' }
+        }}>{t.settings.deleteAll}</button>
       </div>
     </main>
   )

@@ -9,6 +9,7 @@ import { dailyCard } from '../lib/reading'
 import { utcDate } from '../lib/dates'
 import { dailySeed, printFor } from '../lib/print'
 import type { Card } from '../data/cards'
+import { t } from '../i18n'
 
 const SKEY = 'tarottwin:revealed'
 const stamp = (userId: string, date: string) => `${userId}|${date}`
@@ -32,7 +33,7 @@ export default function Home() {
   }, [isRevealed, card.id, print])
   return (
     <main className="page home">
-      <h1>Today's card</h1>
+      <h1>{t.home.title}</h1>
       <p className="muted">{name}, {date}</p>
       <div className="home-card">
         <TarotCard
@@ -48,7 +49,7 @@ export default function Home() {
           onInspect={() => setSheet(card)}
         />
       </div>
-      {!isRevealed && <p className="muted" style={{ textAlign: 'center' }}>Tap the card to reveal</p>}
+      {!isRevealed && <p className="muted" style={{ textAlign: 'center' }}>{t.home.tapToReveal}</p>}
       {isRevealed && <p className="prose">{dailyProse(card, date, run)}</p>}
       <Countdown onZero={onZero} hidden={!isRevealed} />
       <TwinReadings />

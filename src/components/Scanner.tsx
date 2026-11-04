@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import jsQR from 'jsqr'
+import { t } from '../i18n'
 
 interface Detector {
   detect(src: CanvasImageSource): Promise<{ rawValue: string }[]>
@@ -26,7 +27,7 @@ export default function Scanner({ onResult }: { onResult: (text: string) => void
 
     async function start() {
       if (!window.isSecureContext || !navigator.mediaDevices?.getUserMedia) {
-        setError('Camera needs a secure (https) connection and a supported browser.')
+        setError(t.scanner.needsHttps)
         return
       }
       try {
@@ -35,10 +36,10 @@ export default function Scanner({ onResult }: { onResult: (text: string) => void
         const n = (e as DOMException).name
         setError(
           n === 'NotAllowedError' || n === 'SecurityError'
-            ? 'Camera permission was denied. Allow camera access in your browser settings.'
+            ? t.scanner.denied
             : n === 'NotFoundError' || n === 'OverconstrainedError'
-              ? 'No camera was found on this device.'
-              : 'Could not start the camera.',
+              ? t.scanner.noCamera
+              : t.scanner.failed,
         )
         return
       }

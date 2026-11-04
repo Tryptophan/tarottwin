@@ -4,12 +4,13 @@ import type { Card } from '../data/cards'
 import { TarotCard } from './TarotCard'
 import { holdOverlay } from '../gl/renderer'
 import { RARITIES, type Print, type Rarity } from '../lib/print'
+import { t } from '../i18n'
 
 /**
  * Full-screen view of a revealed card (its details are printed on the card). It owns a history entry,
  * so the phone's back gesture closes it instead of leaving the page.
  */
-const label = (r: Rarity) => r[0] + r.slice(1).toLowerCase()
+const label = (r: Rarity) => t.card.rarity[r]
 
 /**
  * `print` is the copy drawn in a reading. In the Collection, pass `owned` instead (every print pulled of this card):
@@ -77,7 +78,7 @@ export function CardInspect({ card, print, owned, onClose, locked = false }: { c
   return createPortal(
     <div className="inspect" role="dialog" aria-modal="true" aria-label={card.name}
       onClick={(e) => e.target === e.currentTarget && close()}>
-      <button ref={backRef} type="button" className="inspect-back" aria-label="Back" onClick={close}>
+      <button ref={backRef} type="button" className="inspect-back" aria-label={t.common.back} onClick={close}>
         <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="2"
           strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M19 12H5M11 6l-6 6 6 6" /></svg>
       </button>
@@ -85,7 +86,7 @@ export function CardInspect({ card, print, owned, onClose, locked = false }: { c
         <TarotCard card={card} print={shown} revealed={faceUp} size="xl" onReveal={() => setFaceUp(true)} onInspect={() => setFaceUp(false)} />
       </div>
       {owned && (
-        <div className="inspect-finishes" role="radiogroup" aria-label="Rarity">
+        <div className="inspect-finishes" role="radiogroup" aria-label={t.card.rarityAria}>
           {RARITIES.map((r) => {
             const n = owned.filter((p) => p.rarity === r).length
             return (

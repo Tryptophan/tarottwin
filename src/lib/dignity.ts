@@ -1,4 +1,5 @@
 import type { Element } from '../data/cards'
+import { t } from '../i18n'
 
 export type Relation = 'same' | 'allied' | 'opposed' | 'neutral'
 export type Tone = 'harmonious' | 'challenging' | 'balanced'
@@ -34,9 +35,4 @@ export function overallTone(main: Relation, bridgeA: Relation, bridgeB: Relation
   return score > 0 ? 'harmonious' : score < 0 ? 'challenging' : 'balanced'
 }
 
-export const RELATION_LABEL: Record<Relation, string> = {
-  same: 'Strengthened',
-  allied: 'Allied',
-  opposed: 'Opposed',
-  neutral: 'Neutral',
-}
+export const RELATION_LABEL: Record<Relation, string> = t.dignity.relation

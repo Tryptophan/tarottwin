@@ -1,12 +1,38 @@
 /// <reference types="vitest/config" />
 import react from '@vitejs/plugin-react'
-import { defineConfig } from 'vite'
+import { defineConfig, runnerImport, type Plugin } from 'vite'
 import { VitePWA } from 'vite-plugin-pwa'
+
+/**
+ * One static page per language (`/`, `/es/`, `/pt/`…) with its own title, description and share preview, plus a
+ * sitemap listing them. Runs before the PWA plugin collects files, so the service worker precaches every page.
+ */
+function localizedPages(): Plugin {
+  return {
+    name: 'localized-pages',
+    apply: 'build',
+    enforce: 'post',
+    async generateBundle(_, bundle) {
+      // the app's own locale code, loaded through Vite (the config loader can't follow its imports)
+      const { module: m } = await runnerImport<typeof import('./src/i18n/html')>('/src/i18n/html.ts', { configFile: false, logLevel: 'error' })
+      const { LANGS, localizeHtml, sitemap } = m
+      const root = bundle['index.html']
+      if (!root || root.type !== 'asset') throw new Error('localized-pages: no index.html in the bundle')
+      const html = String(root.source)
+      root.source = localizeHtml(html, 'en')
+      for (const lang of LANGS) {
+        if (lang !== 'en') this.emitFile({ type: 'asset', fileName: `${lang}/index.html`, source: localizeHtml(html, lang) })
+      }
+      this.emitFile({ type: 'asset', fileName: 'sitemap.xml', source: sitemap() })
+    },
+  }
+}
 
 export default defineConfig({
   base: './',
   plugins: [
     react(),
+    localizedPages(),
     VitePWA({
       // a new version waits until the person taps Reload (see src/lib/pwa.ts), so an open tab never mixes old and new code
       registerType: 'prompt',

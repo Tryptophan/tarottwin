@@ -24,16 +24,39 @@ export function kindLabel(card: Pick<Card, 'arcana' | 'suit'>): string {
 
 export type Measure = (text: string, size: number) => number
 
-/** Greedy word wrap. A single word wider than maxWidth stays on its own line. */
+/** Kana, kanji and full-width forms: Japanese breaks between any two of these, with no spaces. */
+const CJK = /[぀-ヿ㐀-䶿一-鿿豈-﫿＀-￯]/
+/** What may not start a line (closing punctuation, small kana, the long vowel mark): it sticks to the character before. */
+const NO_START = '、。，．・：；！？」』）】〕ーぁぃぅぇぉっゃゅょゎァィゥェォッャュョヮヵヶ々…'
+
+/**
+ * Breakable pieces of a text. `glue` pieces join the previous one with no space: the characters of a
+ * Japanese run, so it can wrap between them. Everything else (Latin, Hangul) breaks at spaces.
+ */
+function pieces(text: string): Array<{ s: string; glue: boolean }> {
+  const out: Array<{ s: string; glue: boolean }> = []
+  for (const word of text.split(/\s+/).filter(Boolean)) {
+    if (!CJK.test(word)) { out.push({ s: word, glue: false }); continue }
+    let first = true
+    for (const ch of word) {
+      const last = out[out.length - 1]
+      if (!first && last && (NO_START.includes(ch) || (!CJK.test(ch) && !CJK.test(last.s.slice(-1))))) last.s += ch
+      else out.push({ s: ch, glue: !first })
+      first = false
+    }
+  }
+  return out
+}
+
+/** Greedy word wrap. A single word wider than maxWidth stays on its own line. Japanese wraps between characters. */
 export function wrapLines(text: string, size: number, maxWidth: number, measure: Measure): string[] {
-  const words = text.split(/\s+/).filter(Boolean)
   const lines: string[] = []
   let cur = ''
-  for (const w of words) {
-    const next = cur ? `${cur} ${w}` : w
+  for (const { s, glue } of pieces(text)) {
+    const next = cur ? `${cur}${glue ? '' : ' '}${s}` : s
     if (cur && measure(next, size) > maxWidth) {
       lines.push(cur)
-      cur = w
+      cur = s
     } else cur = next
   }
   if (cur) lines.push(cur)

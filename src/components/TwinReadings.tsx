@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import { formatCountdown, msUntilNextUtcDay, utcDate } from '../lib/dates'
 import { useAppState } from '../lib/storage'
 import { twinRows } from '../lib/twinList'
+import { t } from '../i18n'
 
 /** Twin readings with each bond: ready to read, or a countdown to the next one once today's is done. */
 export default function TwinReadings() {
@@ -16,9 +17,9 @@ export default function TwinReadings() {
   const rows = twinRows(friends, history, utcDate(now))
   return (
     <section className="home-twins">
-      <h2>Twin readings</h2>
+      <h2>{t.twinReadings.title}</h2>
       {rows.length === 0 ? (
-        <p className="muted">Invite a friend from <Link to="/bonds">Bonds</Link> to read together.</p>
+        <p className="muted">{t.twinReadings.emptyBefore}<Link to="/bonds">{t.nav.bonds}</Link>{t.twinReadings.emptyAfter}</p>
       ) : (
         <ul className="bond-list">
           {rows.map((r) => (
@@ -26,7 +27,7 @@ export default function TwinReadings() {
               <Link to={`/twin/${r.id}`} className="bond-item">
                 <strong>{r.name}</strong>
                 <span className="muted bond-meta">
-                  {r.done ? <>Next reading in <time>{formatCountdown(msUntilNextUtcDay(now))}</time></> : 'Ready to read'}
+                  {r.done ? <>{t.twinReadings.nextIn} <time>{formatCountdown(msUntilNextUtcDay(now))}</time></> : t.twinReadings.ready}
                 </span>
               </Link>
             </li>

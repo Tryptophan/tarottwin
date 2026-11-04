@@ -4,6 +4,7 @@ import { faceDataUrl } from '../gl/cardFace'
 import { assetUrl, loadManifest } from '../lib/foil'
 import { printTag, type Print } from '../lib/print'
 import { CardSigil } from './CardSigil'
+import { t } from '../i18n'
 import { Sparkles } from './Sparkles'
 
 type Size = 'sm' | 'md' | 'lg' | 'xl'
@@ -54,8 +55,8 @@ export function TarotCardFallback({
 
   const major = card.arcana === 'major'
   const handle = () => (revealed ? onInspect?.() : onReveal?.())
-  const aria = revealed ? `${card.name}. Tap for details` : `Face-down card${label ? ` for ${label}` : ''}. Tap to reveal`
-  const src = `${import.meta.env.BASE_URL}cards/${card.id}.webp`
+  const aria = revealed ? t.card.inspectAria(card.name) : t.card.faceDownAria(label)
+  const src = assetUrl(`cards/${card.id}.webp`)
 
   return (
     <div className={`tcard-wrap tcard-${size}`}>

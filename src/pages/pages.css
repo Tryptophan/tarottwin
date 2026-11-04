@@ -119,3 +119,6 @@
 .shop-buy-short { width: 5.5rem; padding-inline: 0; }
 .shop-soon { flex: none; white-space: nowrap; }
 .shop-item > div { min-width: 0; }
+/* a long position label ("Teraźniejszość · odwrócona") wraps under its card instead of widening the slot */
+.reading-slot { display: flex; flex-direction: column; align-items: center; }
+.reading-slot > .tcard-label { width: 0; min-width: 100%; text-align: center; letter-spacing: .1em; line-height: 1.5; }

@@ -1,5 +1,6 @@
 import { useSyncExternalStore } from 'react'
 import { randomHex } from './crypto'
+import { t } from '../i18n'
 import type { OracleEntry } from './oracle'
 import type { Print } from './print'
 import { STUBBED, stubState } from './stub'
@@ -127,7 +128,7 @@ export function withName(s: AppState, name: string): AppState {
 
 export function withFriend(s: AppState, id: string, name: string, secret: string, joinVia?: string, now = new Date()): AppState {
   const existing = s.friends[id]
-  const cleaned = name.trim() || existing?.name || 'Stranger'
+  const cleaned = name.trim() || existing?.name || t.common.stranger
   return {
     ...s,
     friends: {

@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react'
 import { downloadForOffline, useOffline } from '../lib/offline'
+import { t } from '../i18n'
 
 /** A pill while the cards are being saved for offline use, and briefly when that is done. */
 export function OfflineStatus() {
@@ -19,20 +20,20 @@ export function OfflineStatus() {
     const pct = Math.round((s.done / Math.max(1, s.total)) * 100)
     return (
       <div className="update-banner offline-pill" role="status">
-        <span className="tcard-spinner" /> Saving cards for offline… {pct}%
+        <span className="tcard-spinner" /> {t.banners.savingOffline(pct)}
       </div>
     )
   }
   if (s.status === 'error') {
     return (
       <div className="update-banner offline-pill" role="status">
-        Couldn’t save every card for offline
-        <button type="button" className="btn btn-gold btn-sm" onClick={() => void downloadForOffline()}>Retry</button>
+        {t.banners.offlineFailed}
+        <button type="button" className="btn btn-gold btn-sm" onClick={() => void downloadForOffline()}>{t.banners.retry}</button>
       </div>
     )
   }
   if (s.status === 'ready' && showReady) {
-    return <div className="update-banner offline-pill" role="status">Ready to use offline</div>
+    return <div className="update-banner offline-pill" role="status">{t.banners.offlineReady}</div>
   }
   return null
 }

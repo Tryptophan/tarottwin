@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { formatCountdown, msUntilNextUtcDay } from '../lib/dates'
+import { t } from '../i18n'
 
 /** Ticks each second; calls onZero once when the UTC day rolls over. `hidden` only hides the text. */
-export default function Countdown({ label = 'New card in', onZero, hidden = false }: { label?: string; onZero?: () => void; hidden?: boolean }) {
+export default function Countdown({ label = t.home.newCardIn, onZero, hidden = false }: { label?: string; onZero?: () => void; hidden?: boolean }) {
   const [ms, setMs] = useState(() => msUntilNextUtcDay())
   useEffect(() => {
     const t = setInterval(() => {

@@ -18,6 +18,21 @@ npm run build
 ```
 Deploys to GitHub Pages via `.github/workflows/deploy.yml` (set Settings → Pages → Source to "GitHub Actions").
 
+## Languages
+English, Spanish, Brazilian Portuguese, Japanese, Korean and Polish. All text (UI, card names and meanings, reading prose) lives in `src/i18n/`: `en.ts` is the source, and every other locale must match its shape (TypeScript and `src/i18n/i18n.test.ts` check this). Each locale writes its own reading templates, drawing as many times as English so friends reading in different languages get the same cards and the same reading.
+
+Each language has its own static page: `/` (English), `/es/`, `/pt/`, `/ja/`, `/ko/`, `/pl/`. The build writes them from `index.html` with that language's title, description, Open Graph/Twitter tags, share image, JSON-LD, noscript text, canonical URL and `hreflang` links, plus `sitemap.xml` (see `src/i18n/html.ts` and the copy in `src/i18n/seo.ts`). Link previews and crawlers see the right language without running JavaScript. In the app, the language is the page's folder, else `?lang=xx`, else the one picked in Settings, else the browser's.
+
+### Share images
+`public/og/<lang>.png` (1200x630) are rendered by the app's own card renderer, one card per rarity, with the headline from `src/i18n/seo.ts`:
+
+```sh
+node scripts/gen-og.mjs            # every language
+node scripts/gen-og.mjs --only pt  # one or a few: --only es,pt
+```
+
+It needs Chrome or Chromium (`CHROME_BIN=…` if it isn't in a usual place). The page is `scripts/og/og.html` (`src/og/`), served by a temporary Vite dev server. Re-run it when the headline or the card art changes.
+
 ## Collection
 A card is lit in the Collection once you have pulled it, as your daily card or in a Twin reading. The rest are shadowed out, but can still be opened. For development, set the build flag `VITE_UNLOCK_ALL=true` to show every card as unlocked: `npm run dev:unlocked`, or `VITE_UNLOCK_ALL=true npm run build`.
 

@@ -5,8 +5,10 @@ import './styles.css'
 import App from './App.tsx'
 import { initPwa } from './lib/pwa'
 import { installDebugCapture } from './lib/debuglog'
+import { applyDocumentLocale } from './i18n'
 
 installDebugCapture()
+applyDocumentLocale()
 initPwa()
 
 createRoot(document.getElementById('root')!).render(

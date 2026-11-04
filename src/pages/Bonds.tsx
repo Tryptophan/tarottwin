@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { utcDate } from '../lib/dates'
 import { sharedStreak, streak } from '../lib/streak'
 import { useAppState } from '../lib/storage'
+import { t } from '../i18n'
 
 export default function Bonds() {
   const { friends, history } = useAppState()
@@ -10,11 +11,11 @@ export default function Bonds() {
   return (
     <main className="page bonds">
       <div className="bonds-head">
-        <h1>Bonds</h1>
-        <Link className="btn btn-gold" to="/twin">Invite</Link>
+        <h1>{t.bonds.title}</h1>
+        <Link className="btn btn-gold" to="/twin">{t.bonds.invite}</Link>
       </div>
       {list.length === 0 ? (
-        <p className="muted">No bonds yet. Invite a friend to start one.</p>
+        <p className="muted">{t.bonds.empty}</p>
       ) : (
         <ul className="bond-list">
           {list.map((f) => {
@@ -29,13 +30,13 @@ export default function Bonds() {
                 <Link to={readToday ? `/bonds/${f.id}` : `/twin/${f.id}`} className="bond-item">
                   <strong>{f.name}</strong>
                   <span className="muted bond-meta">
-                    {h[0] ? `Last ${h[0].date}` : 'No readings yet'}
+                    {h[0] ? t.bonds.last(h[0].date) : t.bonds.noReadings}
                     {run > 0 && (
-                      <span className="streak" title={safe ? `${run}-day streak` : `${run}-day streak: read today to keep it`}>
+                      <span className="streak" title={safe ? t.bonds.streak(run) : t.bonds.streakAtRisk(run)}>
                         {' · '}<span className={safe ? undefined : 'flame-fading'}>🔥</span> {run}
                       </span>
                     )}
-                    {f.syncedAt === undefined ? ' · waiting to sync' : theirsToday ? ' · read today' : ' · not yet today'}
+                    {' · '}{f.syncedAt === undefined ? t.bonds.waiting : theirsToday ? t.bonds.readToday : t.bonds.notYetToday}
                   </span>
                 </Link>
               </li>

@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { Logo } from '../components/Logo'
 import { update, withName } from '../lib/storage'
+import { t } from '../i18n'
 
 export default function Onboarding() {
   const [name, setName] = useState('')
@@ -9,17 +10,17 @@ export default function Onboarding() {
     <main className="page onboarding">
       <Logo size={96} />
       <h1>Tarot Twin</h1>
-      <p className="muted">One card a day. A twin reading for two.</p>
+      <p className="muted">{t.onboarding.tagline}</p>
       <form
         onSubmit={(e) => {
           e.preventDefault()
           if (name.trim()) go(name.trim())
         }}
       >
-        <input id="name" aria-label="Your name" className="input" value={name} maxLength={40} autoFocus required
-          onChange={(e) => setName(e.target.value)} placeholder="Your name" />
+        <input id="name" aria-label={t.onboarding.namePlaceholder} className="input" value={name} maxLength={40} autoFocus required
+          onChange={(e) => setName(e.target.value)} placeholder={t.onboarding.namePlaceholder} />
         <div className="row">
-          <button type="submit" className="btn btn-gold" disabled={!name.trim()}>Begin</button>
+          <button type="submit" className="btn btn-gold" disabled={!name.trim()}>{t.onboarding.begin}</button>
         </div>
       </form>
     </main>

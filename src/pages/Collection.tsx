@@ -4,14 +4,15 @@ import { TarotCard } from '../components/TarotCard'
 import { DECK, type Card } from '../data/cards'
 import { unlockAll } from '../lib/debug'
 import { useAppState } from '../lib/storage'
+import { t } from '../i18n'
 
 const FILTERS = [
-  { key: 'all', label: 'All' },
-  { key: 'major', label: 'Major' },
-  { key: 'wands', label: 'Wands' },
-  { key: 'cups', label: 'Cups' },
-  { key: 'swords', label: 'Swords' },
-  { key: 'pentacles', label: 'Pentacles' },
+  { key: 'all', label: t.collection.all },
+  { key: 'major', label: t.collection.major },
+  { key: 'wands', label: t.collection.suits.wands },
+  { key: 'cups', label: t.collection.suits.cups },
+  { key: 'swords', label: t.collection.suits.swords },
+  { key: 'pentacles', label: t.collection.suits.pentacles },
 ] as const
 type Filter = (typeof FILTERS)[number]['key']
 
@@ -34,12 +35,12 @@ export default function Collection() {
   const count = debug ? DECK.length : DECK.filter((c) => have.has(c.id)).length
   return (
     <main className="page collection">
-      <h1>Collection{debug && <span className="debug-tag">all unlocked</span>}</h1>
-      <p className="muted">{count} of {DECK.length} cards unlocked</p>
-      <div className="filter-row" aria-label="Filter cards">
+      <h1>{t.collection.title}{debug && <span className="debug-tag">{t.collection.allUnlocked}</span>}</h1>
+      <p className="muted">{t.collection.count(count, DECK.length)}</p>
+      <div className="filter-row" aria-label={t.collection.filterAria}>
         <button type="button" aria-pressed={onlyUnlocked}
           className={`chip filter-chip filter-unlocked${onlyUnlocked ? ' filter-on' : ''}`} onClick={() => setOnlyUnlocked((v) => !v)}>
-          Unlocked
+          {t.collection.unlocked}
         </button>
         <span className="filter-sep" aria-hidden="true" />
         {FILTERS.map((f) => (
@@ -51,14 +52,14 @@ export default function Collection() {
       </div>
       {cards.length === 0 && (
         <p className="muted collection-empty">
-          {onlyUnlocked ? 'Nothing here yet. Pull your daily card or a Twin reading to unlock cards, or show the locked ones.' : 'No cards match.'}
+          {onlyUnlocked ? t.collection.emptyLocked : t.collection.noMatch}
         </p>
       )}
       <div className="collection-grid">
         {cards.map((c) => (
           <span key={c.id} className={`collection-tile${isLocked(c) ? ' tcard-locked' : ''}`}>
             <TarotCard card={c} revealed size="sm" onInspect={() => setSheet(c)} />
-            {(prints[c.id]?.length ?? 0) > 0 && <span className="collection-count" aria-label={`${prints[c.id].length} owned`}>×{prints[c.id].length}</span>}
+            {(prints[c.id]?.length ?? 0) > 0 && <span className="collection-count" aria-label={t.collection.owned(prints[c.id].length)}>×{prints[c.id].length}</span>}
           </span>
         ))}
       </div>
