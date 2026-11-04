@@ -1,3 +1,5 @@
+import { siteRoot } from '../i18n'
+
 const ID_RE = /^[0-9a-f]{20}$/
 const SECRET_RE = /^[0-9a-f]{32}$/
 
@@ -11,9 +13,12 @@ export interface Invite {
   secret: string
 }
 
-/** The secret is the whole bond: it stays in the hash, which never leaves the browser. */
+/**
+ * The secret is the whole bond: it stays in the hash, which never leaves the browser. The link points at the site
+ * root, not the inviter's language page (`/pt/`), so the friend opens it in their own language.
+ */
 export function buildInviteLink(id: string, name: string, secret: string): string {
-  return `${location.origin}${location.pathname}#/join/${secret}?i=${id}&n=${encodeURIComponent(name)}`
+  return `${location.origin}${siteRoot(location.pathname)}#/join/${secret}?i=${id}&n=${encodeURIComponent(name)}`
 }
 
 /** Accepts a full URL (or bare hash) containing `#/join/<secret>?i=<id>&n=<name>`. */

@@ -10,6 +10,14 @@ describe('invite link', () => {
     expect(link).toContain(`#/join/${SECRET}?i=${ID}&n=`)
     expect(parseInviteLink(link)).toEqual({ id: ID, name: 'Zoë & Co', secret: SECRET })
   })
+  it('points at the site root from a language page, so the friend keeps their own language', () => {
+    history.replaceState(null, '', '/pt/#/twin')
+    try {
+      expect(buildInviteLink(ID, 'Ana', SECRET)).toBe(`${location.origin}/#/join/${SECRET}?i=${ID}&n=Ana`)
+    } finally {
+      history.replaceState(null, '', '/')
+    }
+  })
   it('parses without name', () => {
     expect(parseInviteLink(`https://x.io/app/#/join/${SECRET}?i=${ID}`)).toEqual({ id: ID, name: '', secret: SECRET })
   })
